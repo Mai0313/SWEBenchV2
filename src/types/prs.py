@@ -1,7 +1,7 @@
 from enum import Enum
 from datetime import datetime
 
-from pydantic import Field, BaseModel, ConfigDict
+from pydantic import Field, BaseModel, ConfigDict, AliasChoices
 
 
 class UserType(str, Enum):
@@ -210,7 +210,7 @@ class BranchReference(BaseModel):
 
 
 class Links(BaseModel):
-    self_link: dict = Field(..., alias="self", description="Self link")
+    self_link: dict = Field(..., validation_alias=AliasChoices("self", "self_link"), description="Self link")
     html: dict = Field(..., description="HTML link")
     issue: dict = Field(..., description="Issue link")
     comments: dict = Field(..., description="Comments link")
@@ -262,7 +262,9 @@ class PullRequest(BaseModel):
     )
     head: BranchReference = Field(..., description="Head branch (source)")
     base: BranchReference = Field(..., description="Base branch (target)")
-    links: Links = Field(..., alias="_links", description="Related links")
+    links: Links = Field(
+        ..., validation_alias=AliasChoices("_links", "links"), description="Related links"
+    )
     author_association: AuthorAssociation = Field(
         ..., description="Author's association with repository"
     )

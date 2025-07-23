@@ -38,7 +38,7 @@ class ExtractionResult(BaseModel):
         default_factory=list, description="List of training data for each PR"
     )
 
-    def save(self) -> Path:
+    def save_log(self) -> Path:
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_log = Path(f"./data/{self.repository}/log_{now}.json")
         output_log.parent.mkdir(parents=True, exist_ok=True)

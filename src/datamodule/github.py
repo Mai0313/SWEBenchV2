@@ -245,5 +245,5 @@ class GitHubPRExtractor(BaseSettings):
             prs=all_training_data,
         )
         if save_json:
-            data.save()
+            data.save_log()
         return data
