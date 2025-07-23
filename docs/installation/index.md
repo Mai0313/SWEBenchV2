@@ -95,8 +95,8 @@ This page will guide you through the installation process this project.
 === "Conda"
 
     ```bash
-    conda create -n swe_bench_v2 python=3.10 -y
-    conda activate swe_bench_v2
+    conda create -n SWEBenchV2 python=3.10 -y
+    conda activate SWEBenchV2
     conda install uv
     uv pip sync pyproject.toml
     ```

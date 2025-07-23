@@ -61,7 +61,7 @@ omit = ["./src/ameba/*"]
 # ================== #
 
 [project]
-name = "swe_bench_v2"
+name = "SWEBenchV2"
 version = "0.1.0"
 description = "Repository template for Python projects"
 authors = [
@@ -79,9 +79,12 @@ readme = "README.md"
 requires-python = ">= 3.10"
 license = { text = "MIT" }
 
+[project.scripts]
+swebenchv2 = "swebenchv2.cli:main"
+
 [project.urls]
-Homepage = "https://github.com/Mai0313/swe_bench_v2"
-Repository = "https://github.com/Mai0313/swe_bench_v2"
+Homepage = "https://github.com/Mai0313/SWEBenchV2"
+Repository = "https://github.com/Mai0313/SWEBenchV2"
 
 [build-system]
 requires = ["hatchling", "hatch-fancy-pypi-readme"]
@@ -182,7 +185,7 @@ docs = ["docs_gen", "docs_run"]
 # https://docs.astral.sh/uv/reference/settings
 [tool.uv]
 managed = true
-package = false
+package = true
 check-url = "https://test.pypi.org/simple"
 publish-url = "https://test.pypi.org/legacy/"
 compile-bytecode = true
@@ -471,7 +474,7 @@ skip-magic-trailing-comma = true
 [tool.logfire]
 send_to_logfire = false
 token = false
-project_name = "swe_bench_v2"
+project_name = "SWEBenchV2"
 trace_sample_rate = 1.0
 console_colors = "auto"
 console_span_style = "show-parents"

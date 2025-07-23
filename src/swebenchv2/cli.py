@@ -2,8 +2,8 @@
 
 from pydantic import BaseModel
 
-from src.swebenchv2.types.models import ExtractionResult
-from src.swebenchv2.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
+from swebenchv2.types.models import ExtractionResult
+from swebenchv2.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
 
 
 class SWEBench(BaseModel):
@@ -30,7 +30,12 @@ class SWEBench(BaseModel):
         await self.a_main()
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """CLI entry point."""
     import fire
 
     fire.Fire(SWEBench)
+
+
+if __name__ == "__main__":
+    main()

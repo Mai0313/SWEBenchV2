@@ -1,9 +1,9 @@
 import pytest
 
-from src.swebenchv2.types.prs import PullRequest
-from src.swebenchv2.types.limit import RateLimit
-from src.swebenchv2.types.models import FileData, TrainingData, ExtractionResult
-from src.swebenchv2.datamodule.github import AsyncGitHubPRExtractor
+from swebenchv2.types.prs import PullRequest
+from swebenchv2.types.limit import RateLimit
+from swebenchv2.types.models import FileData, TrainingData, ExtractionResult
+from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 
 
 @pytest.mark.asyncio

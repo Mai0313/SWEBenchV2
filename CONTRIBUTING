@@ -7,8 +7,8 @@ Thank you for your interest in contributing to SWEBenchV2! This document provide
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/swe_bench_v2.git
-   cd swe_bench_v2
+   git clone https://github.com/YOUR_USERNAME/SWEBenchV2.git
+   cd SWEBenchV2
    ```
 
 3. **Set up the development environment**:
@@ -164,7 +164,7 @@ The URL parsing is handled automatically by the `GitHubPRExtractorBase` class us
 For performance-critical applications, use the async version with optimized concurrent processing:
 
 ```python
-from src.swebenchv2.datamodule.github import AsyncGitHubPRExtractor
+from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 import asyncio
 
 async def extract_data():
@@ -241,7 +241,7 @@ Example test structure:
 ```python
 import pytest
 from unittest.mock import Mock, patch
-from src.swebenchv2.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
+from swebenchv2.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
 
 class TestGitHubPRExtractor:
     """Test cases for GitHubPRExtractor class."""
@@ -433,8 +433,8 @@ Please discuss major changes in an issue before implementing.
 
 If you need help:
 
-1. Check existing [issues](https://github.com/Mai0313/swe_bench_v2/issues)
-2. Read the [documentation](https://mai0313.github.io/swe_bench_v2/)
+1. Check existing [issues](https://github.com/Mai0313/SWEBenchV2/issues)
+2. Read the [documentation](https://mai0313.github.io/SWEBenchV2/)
 3. Create a new issue with the question label
 
 ## 🏆 Recognition
@@ -448,10 +448,10 @@ Contributors are recognized in several ways:
 ## 🔗 Useful Links
 
 - [Project README](README.md)
-- [API Documentation](https://mai0313.github.io/swe_bench_v2/)
-- [Issues](https://github.com/Mai0313/swe_bench_v2/issues)
-- [Pull Requests](https://github.com/Mai0313/swe_bench_v2/pulls)
-- [Discussions](https://github.com/Mai0313/swe_bench_v2/discussions)
+- [API Documentation](https://mai0313.github.io/SWEBenchV2/)
+- [Issues](https://github.com/Mai0313/SWEBenchV2/issues)
+- [Pull Requests](https://github.com/Mai0313/SWEBenchV2/pulls)
+- [Discussions](https://github.com/Mai0313/SWEBenchV2/discussions)
 
 ## 📄 License
 

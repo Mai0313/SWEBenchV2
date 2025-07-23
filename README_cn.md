@@ -3,12 +3,12 @@
 [![python](https://img.shields.io/badge/-Python_3.10_%7C_3.11_%7C_3.12-blue?logo=python&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![uv](https://img.shields.io/badge/-uv_dependency_management-2C5F2D?logo=python&logoColor=white)](https://docs.astral.sh/uv/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![tests](https://github.com/Mai0313/swe_bench_v2/actions/workflows/test.yml/badge.svg)](https://github.com/Mai0313/swe_bench_v2/actions/workflows/test.yml)
-[![code-quality](https://github.com/Mai0313/swe_bench_v2/actions/workflows/code-quality-check.yml/badge.svg)](https://github.com/Mai0313/swe_bench_v2/actions/workflows/code-quality-check.yml)
-[![codecov](https://codecov.io/gh/Mai0313/swe_bench_v2/branch/master/graph/badge.svg)](https://codecov.io/gh/Mai0313/swe_bench_v2)
-[![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/Mai0313/swe_bench_v2/tree/master?tab=License-1-ov-file)
-[![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Mai0313/swe_bench_v2/pulls)
-[![contributors](https://img.shields.io/github/contributors/Mai0313/swe_bench_v2.svg)](https://github.com/Mai0313/swe_bench_v2/graphs/contributors)
+[![tests](https://github.com/Mai0313/SWEBenchV2/actions/workflows/test.yml/badge.svg)](https://github.com/Mai0313/SWEBenchV2/actions/workflows/test.yml)
+[![code-quality](https://github.com/Mai0313/SWEBenchV2/actions/workflows/code-quality-check.yml/badge.svg)](https://github.com/Mai0313/SWEBenchV2/actions/workflows/code-quality-check.yml)
+[![codecov](https://codecov.io/gh/Mai0313/SWEBenchV2/branch/master/graph/badge.svg)](https://codecov.io/gh/Mai0313/SWEBenchV2)
+[![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/Mai0313/SWEBenchV2/tree/master?tab=License-1-ov-file)
+[![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Mai0313/SWEBenchV2/pulls)
+[![contributors](https://img.shields.io/github/contributors/Mai0313/SWEBenchV2.svg)](https://github.com/Mai0313/SWEBenchV2/graphs/contributors)
 
 **一個創新的 SWE-Bench 替代方案，專注於測量 AI 模型與真實開發者編程模式的相似度，而非簡單的對錯判斷。**
 
@@ -63,8 +63,8 @@
 1. **克隆儲存庫：**
 
 ```bash
-git clone https://github.com/Mai0313/swe_bench_v2.git
-cd swe_bench_v2
+git clone https://github.com/Mai0313/SWEBenchV2.git
+cd SWEBenchV2
 ```
 
 1. **安裝依賴：**
@@ -84,7 +84,7 @@ export GITHUB_TOKEN="your_github_token_here"
 ### 基本使用
 
 ```python
-from src.swebenchv2.datamodule.github import GitHubPRExtractor
+from swebenchv2.datamodule.github import GitHubPRExtractor
 
 # 初始化提取器
 extractor = GitHubPRExtractor(
@@ -134,7 +134,7 @@ for pr in merged_prs[:5]:  # 處理前 5 個 PR
 
 ```python
 import asyncio
-from src.swebenchv2.datamodule.github import AsyncGitHubPRExtractor
+from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 
 
 async def extract_data():
@@ -296,6 +296,6 @@ for pr_data in result.prs:
 
 **為 AI 和軟件開發社區用 ❤️ 製作**
 
-[報告錯誤](https://github.com/Mai0313/swe_bench_v2/issues) • [請求功能](https://github.com/Mai0313/swe_bench_v2/issues) • [文檔](https://mai0313.github.io/swe_bench_v2/)
+[報告錯誤](https://github.com/Mai0313/SWEBenchV2/issues) • [請求功能](https://github.com/Mai0313/SWEBenchV2/issues) • [文檔](https://mai0313.github.io/SWEBenchV2/)
 
 </div>
