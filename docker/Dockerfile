@@ -36,6 +36,7 @@ RUN uv export --no-hashes --group docs --output-file ./requirements-dev.lock && 
 FROM base AS prod
 WORKDIR /app
 COPY . .
+CMD ["uv", "run", "main.py"]
 
 FROM dev AS docs
 WORKDIR /app
