@@ -21,6 +21,9 @@ Thank you for your interest in contributing to SWEBenchV2! This document provide
 
    # Install pre-commit hooks
    uv run pre-commit install
+
+   # Install the package for CLI testing
+   uv pip install -e .
    ```
 
 4. **Create a new branch** for your feature or bugfix:
@@ -214,6 +217,9 @@ uv run pytest -m "not slow"
 ### Common Development Tasks
 
 ```bash
+# Test the CLI directly
+swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
+
 # Test both sync and async implementations
 uv run pytest tests/test_github.py tests/test_async_github.py
 
@@ -226,6 +232,9 @@ uv run ruff format src tests
 
 # Run full test suite with coverage
 uv run pytest --cov=src --cov-report=html --cov-report=term
+
+# Test CLI module directly (legacy method)
+uv run python -m swebenchv2.cli --repo_url="https://github.com/owner/repo"
 ```
 
 ### Writing Tests

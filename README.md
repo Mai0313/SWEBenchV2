@@ -73,6 +73,12 @@ cd SWEBenchV2
 uv sync
 ```
 
+1. **Install as a package (for CLI usage):**
+
+```bash
+uv pip install -e .
+```
+
 1. **Set up your GitHub token:**
 
 ```bash
@@ -81,7 +87,27 @@ export GITHUB_TOKEN="your_github_token_here"
 
 ## 📖 Usage
 
-### Basic Usage
+### CLI Usage (Recommended)
+
+After installing the package, you can use the `swebenchv2` command directly:
+
+```bash
+# Basic usage - extract PRs from a repository
+swebenchv2 --repo_url="https://github.com/owner/repo"
+
+# With custom parameters
+swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=5 --per_page=50
+
+# Using synchronous mode
+swebenchv2 main --repo_url="https://github.com/owner/repo"
+
+# Using asynchronous mode (faster for large repositories)
+swebenchv2 a_main --repo_url="https://github.com/owner/repo"
+
+# The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
+```
+
+### Python Library Usage
 
 ```python
 from swebenchv2.datamodule.github import GitHubPRExtractor
@@ -98,11 +124,11 @@ result = extractor.extract_all_pr_data(save_json=True)
 print(f"Extracted {result.total_prs} PRs from {result.repository}")
 ```
 
-### Command Line Usage
+### Command Line Usage (Legacy)
 
 ```bash
-# Run with default configuration
-uv run python main.py
+# Run with Fire CLI directly
+uv run python -m swebenchv2.cli --repo_url="https://github.com/owner/repo"
 
 # The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
 ```

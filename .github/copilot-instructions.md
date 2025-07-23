@@ -12,6 +12,24 @@ The project extracts training data from actual merged pull requests from GitHub 
 
 ## Core Data Extraction System
 
+### CLI Interface (`src/swebenchv2/cli.py`)
+
+The project provides a command-line interface for easy data extraction:
+
+- **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/owner/repo"`
+- **Sync Mode**: `swebenchv2 main --repo_url="..."`
+- **Async Mode**: `swebenchv2 a_main --repo_url="..."` (recommended for large repositories)
+- **Custom Parameters**: `--max_page`, `--per_page` for fine-tuning extraction
+- **JSON Output**: Automatically saves to `./data/{owner}/{repo}/log_{timestamp}.json`
+
+Installation for CLI usage:
+
+```bash
+uv pip install -e .  # Install package in development mode
+export GITHUB_TOKEN="your_token_here"
+swebenchv2 --repo_url="https://github.com/owner/repo"
+```
+
 ### GitHubPRExtractor (`src/datamodule/github.py`)
 
 The main extraction engine that handles:
@@ -91,6 +109,17 @@ Manages GitHub API quotas:
 - Provides structured rate limit information
 
 ## Configuration System
+
+### CLI Entry Points
+
+The package is configured with CLI entry points in `pyproject.toml`:
+
+```toml
+[project.scripts]
+swebenchv2 = "swebenchv2.cli:main"
+```
+
+This allows users to run the tool directly from the command line after installation.
 
 ### Environment Variables
 
@@ -215,6 +244,7 @@ class GitHubFile(BaseModel):
 - Mock GitHub API calls in tests to avoid rate limiting
 - Test edge cases (empty repos, no merged PRs, API failures)
 - Validate data model serialization/deserialization
+- Test CLI functionality after package installation: `swebenchv2 --help`
 
 ## Documentation
 

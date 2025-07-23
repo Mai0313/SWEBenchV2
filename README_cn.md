@@ -73,15 +73,41 @@ cd SWEBenchV2
 uv sync
 ```
 
+1. **安裝為套件（用於 CLI 使用）：**
+
+```bash
+uv pip install -e .
+```
+
 1. **設置您的 GitHub 令牌：**
 
 ```bash
 export GITHUB_TOKEN="your_github_token_here"
 ```
 
-## � 使用方法
+## 📖 使用方法
 
-### 基本使用
+### CLI 使用（推薦）
+
+安裝套件後，您可以直接使用 `swebenchv2` 命令：
+
+```bash
+# 基本使用 - 從儲存庫提取 PR
+swebenchv2 --repo_url="https://github.com/owner/repo"
+
+# 使用自定義參數
+swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=5 --per_page=50
+
+# 使用同步模式
+swebenchv2 main --repo_url="https://github.com/owner/repo"
+
+# 使用異步模式（對大型儲存庫更快）
+swebenchv2 a_main --repo_url="https://github.com/owner/repo"
+
+# 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
+```
+
+### Python 庫使用
 
 ```python
 from swebenchv2.datamodule.github import GitHubPRExtractor
@@ -98,11 +124,11 @@ result = extractor.extract_all_pr_data(save_json=True)
 print(f"從 {result.repository} 提取了 {result.total_prs} 個 PR")
 ```
 
-### 命令行使用
+### 命令行使用（舊版）
 
 ```bash
-# 使用默認配置運行
-uv run python main.py
+# 直接使用 Fire CLI 運行
+uv run python -m swebenchv2.cli --repo_url="https://github.com/owner/repo"
 
 # 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
 ```
