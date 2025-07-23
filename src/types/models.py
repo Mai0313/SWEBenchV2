@@ -8,15 +8,6 @@ from pydantic import Field, BaseModel
 from src.types.prs import PullRequest
 
 
-class UserInfo(BaseModel):
-    login: str = Field(..., description="GitHub username")
-
-
-class BranchInfo(BaseModel):
-    ref: str = Field(..., description="Branch reference name")
-    sha: str = Field(..., description="Git commit SHA")
-
-
 class FileData(BaseModel):
     sha: str = Field(..., description="File SHA")
     filename: str = Field(..., description="File path and name")
