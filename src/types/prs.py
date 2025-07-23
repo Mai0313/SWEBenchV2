@@ -46,18 +46,18 @@ class User(BaseModel):
 
 
 class License(BaseModel):
-    key: str = Field(..., description="License key identifier")
-    name: str = Field(..., description="Full license name")
-    url: str = Field(..., description="API URL for license details")
-    spdx_id: str = Field(..., description="SPDX license identifier")
-    node_id: str = Field(..., description="GraphQL node ID")
-    html_url: str = Field(..., description="GitHub URL for license details")
+    key: str = Field(default="", description="License key identifier")
+    name: str = Field(default="", description="Full license name")
+    url: str = Field(default="", description="API URL for license details")
+    spdx_id: str = Field(default="", description="SPDX license identifier")
+    node_id: str = Field(default="", description="GraphQL node ID")
+    html_url: str = Field(default="", description="GitHub URL for license details")
 
 
 class Permissions(BaseModel):
-    admin: bool = Field(..., description="Whether user has admin permissions")
-    push: bool = Field(..., description="Whether user can push to repository")
-    pull: bool = Field(..., description="Whether user can pull from repository")
+    admin: bool = Field(default=False, description="Whether user has admin permissions")
+    push: bool = Field(default=False, description="Whether user can push to repository")
+    pull: bool = Field(default=False, description="Whether user can pull from repository")
 
 
 class Repository(BaseModel):
@@ -133,18 +133,22 @@ class Repository(BaseModel):
     pushed_at: datetime = Field(..., description="Last push timestamp")
     created_at: datetime = Field(..., description="Repository creation timestamp")
     updated_at: datetime = Field(..., description="Last update timestamp")
-    permissions: Permissions = Field(..., description="User permissions on repository")
-    allow_rebase_merge: bool = Field(..., description="Whether rebase merge is allowed")
+    permissions: Permissions = Field(
+        default_factory=Permissions, description="User permissions on repository"
+    )
+    allow_rebase_merge: bool = Field(default=False, description="Whether rebase merge is allowed")
     template_repository: dict | None = Field(
         default=None, description="Template repository if this is from template"
     )
     temp_clone_token: str | None = Field(default=None, description="Temporary clone token")
-    allow_squash_merge: bool = Field(..., description="Whether squash merge is allowed")
-    allow_auto_merge: bool = Field(..., description="Whether auto-merge is allowed")
-    delete_branch_on_merge: bool = Field(..., description="Whether to delete branch on merge")
-    allow_merge_commit: bool = Field(..., description="Whether merge commit is allowed")
-    subscribers_count: int = Field(..., description="Number of subscribers")
-    network_count: int = Field(..., description="Network count")
+    allow_squash_merge: bool = Field(default=False, description="Whether squash merge is allowed")
+    allow_auto_merge: bool = Field(default=False, description="Whether auto-merge is allowed")
+    delete_branch_on_merge: bool = Field(
+        default=False, description="Whether to delete branch on merge"
+    )
+    allow_merge_commit: bool = Field(default=False, description="Whether merge commit is allowed")
+    subscribers_count: int = Field(default=0, description="Number of subscribers")
+    network_count: int = Field(default=0, description="Network count")
     license: License | None = Field(default=None, description="Repository license")
     forks: int = Field(..., description="Number of forks")
     open_issues: int = Field(..., description="Number of open issues")
@@ -233,7 +237,7 @@ class PullRequest(BaseModel):
     locked: bool = Field(..., description="Whether pull request is locked")
     title: str = Field(..., description="Pull request title")
     user: User = Field(..., description="User who created the pull request")
-    body: str | None = Field(default=None, description="Pull request body/description")
+    body: str = Field(default="", description="Pull request body/description")
     labels: list[Label] = Field(default_factory=list, description="Labels applied to pull request")
     milestone: Milestone | None = Field(
         default=None, description="Milestone assigned to pull request"
