@@ -7,7 +7,7 @@ from datetime import datetime
 
 from pydantic import Field, BaseModel
 
-from src.types.prs import PullRequest
+from src.swebenchv2.types.prs import PullRequest
 
 
 class FileData(BaseModel):

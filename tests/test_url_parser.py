@@ -1,4 +1,4 @@
-from src.datamodule.github import GitHubPRExtractorBase
+from src.swebenchv2.datamodule.github import GitHubPRExtractorBase
 
 
 def test_repo_owner_and_name():

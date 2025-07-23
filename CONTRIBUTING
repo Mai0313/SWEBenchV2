@@ -164,7 +164,7 @@ The URL parsing is handled automatically by the `GitHubPRExtractorBase` class us
 For performance-critical applications, use the async version with optimized concurrent processing:
 
 ```python
-from src.datamodule.github import AsyncGitHubPRExtractor
+from src.swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 import asyncio
 
 async def extract_data():
@@ -241,7 +241,7 @@ Example test structure:
 ```python
 import pytest
 from unittest.mock import Mock, patch
-from src.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
+from src.swebenchv2.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
 
 class TestGitHubPRExtractor:
     """Test cases for GitHubPRExtractor class."""

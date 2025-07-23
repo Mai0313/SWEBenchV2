@@ -84,7 +84,7 @@ export GITHUB_TOKEN="your_github_token_here"
 ### Basic Usage
 
 ```python
-from src.datamodule.github import GitHubPRExtractor
+from src.swebenchv2.datamodule.github import GitHubPRExtractor
 
 # Initialize the extractor
 extractor = GitHubPRExtractor(
@@ -134,7 +134,7 @@ For better performance with large repositories, use the asynchronous version wit
 
 ```python
 import asyncio
-from src.datamodule.github import AsyncGitHubPRExtractor
+from src.swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 
 
 async def extract_data():

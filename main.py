@@ -2,8 +2,8 @@
 
 from pydantic import BaseModel
 
-from src.types.models import ExtractionResult
-from src.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
+from src.swebenchv2.types.models import ExtractionResult
+from src.swebenchv2.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
 
 
 class SWEBench(BaseModel):

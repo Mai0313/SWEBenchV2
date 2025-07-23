@@ -121,11 +121,11 @@ allow-direct-references = true
 
 [tool.hatch.build]
 include = [
-    "src/*"
+    "src/swebenchv2"
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/template"]
+packages = ["src/swebenchv2"]
 
 [tool.hatch.build.targets.sdist]
 # Basically everything except hidden files/directories (such as .github, .devcontainers, .python-version, etc)

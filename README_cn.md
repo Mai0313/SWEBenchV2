@@ -84,7 +84,7 @@ export GITHUB_TOKEN="your_github_token_here"
 ### 基本使用
 
 ```python
-from src.datamodule.github import GitHubPRExtractor
+from src.swebenchv2.datamodule.github import GitHubPRExtractor
 
 # 初始化提取器
 extractor = GitHubPRExtractor(
@@ -134,7 +134,7 @@ for pr in merged_prs[:5]:  # 處理前 5 個 PR
 
 ```python
 import asyncio
-from src.datamodule.github import AsyncGitHubPRExtractor
+from src.swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 
 
 async def extract_data():

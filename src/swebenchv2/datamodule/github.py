@@ -12,9 +12,9 @@ import logfire
 from pydantic import Field, ConfigDict, computed_field
 from pydantic_settings import BaseSettings
 
-from src.types.prs import PullRequest
-from src.types.limit import RateLimit
-from src.types.models import FileData, TrainingData, ExtractionResult
+from src.swebenchv2.types.prs import PullRequest
+from src.swebenchv2.types.limit import RateLimit
+from src.swebenchv2.types.models import FileData, TrainingData, ExtractionResult
 
 dotenv.load_dotenv()
 
