@@ -45,12 +45,6 @@ class GitHubAPISettings(BaseSettings):
 
 
 class GitHubPRExtractorBase(GitHubAPISettings):
-    """GitHub PR data extractor for creating LLM training datasets.
-
-    This class extracts merged pull requests from a GitHub repository
-    and formats them into training data with before/after file contents.
-    """
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     token: str | None = Field(
@@ -83,13 +77,11 @@ class GitHubPRExtractorBase(GitHubAPISettings):
     @computed_field
     @cached_property
     def _max_page(self) -> int:
-        """Return the maximum number of pages to fetch."""
         return self.max_page if self.max_page is not None else int(1e6)
 
     @computed_field
     @cached_property
     def _per_page(self) -> int:
-        """Return the number of PRs to fetch per page."""
         return self.per_page if self.per_page is not None else 100
 
     @computed_field

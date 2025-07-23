@@ -1,5 +1,3 @@
-"""Pydantic models for GitHub PR data extraction."""
-
 import json
 import asyncio
 from pathlib import Path

@@ -1,5 +1,3 @@
-"""GitHub PR data extractor for LLM training data generation."""
-
 from swebenchv2.typings.models import ExtractionResult
 from swebenchv2.datamodule.github import (
     GitHubAPISettings,
@@ -24,12 +22,10 @@ class SWEBench(GitHubAPISettings):
         return result
 
     async def __call__(self) -> None:
-        """Run the async extraction."""
         await self.a_main()
 
 
 def main() -> None:
-    """CLI entry point."""
     import fire
 
     fire.Fire(SWEBench)
