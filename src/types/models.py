@@ -1,6 +1,7 @@
 """Pydantic models for GitHub PR data extraction."""
 
 import json
+import asyncio
 from pathlib import Path
 from datetime import datetime
 
@@ -45,9 +46,4 @@ class ExtractionResult(BaseModel):
         return output_log
 
     async def a_save_log(self) -> Path:
-        now = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_log = Path(f"./data/{self.repository}/log_{now}.json")
-        output_log.parent.mkdir(parents=True, exist_ok=True)
-        log_dict = self.model_dump(mode="json", exclude_none=True, exclude_unset=True)
-        output_log.write_text(json.dumps(log_dict, ensure_ascii=False, indent=2), encoding="utf-8")
-        return output_log
+        return await asyncio.to_thread(self.save_log)

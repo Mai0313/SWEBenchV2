@@ -88,7 +88,7 @@ class GitHubPRExtractorBase(BaseSettings):
     @cached_property
     def _per_page(self) -> int:
         """Return the number of PRs to fetch per page."""
-        return self.per_page if self.per_page is not None else 100
+        return self.per_page + 1 if self.per_page is not None else 100
 
     @computed_field
     @cached_property
@@ -125,7 +125,7 @@ class GitHubPRExtractor(GitHubPRExtractorBase):
                         "state": "closed",
                         "sort": "updated",
                         "direction": "desc",
-                        "per_page": self._per_page + 1,
+                        "per_page": self._per_page,
                         "page": page,
                     },
                 )
@@ -272,7 +272,7 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
                         "state": "closed",
                         "sort": "updated",
                         "direction": "desc",
-                        "per_page": self._per_page + 1,
+                        "per_page": self._per_page,
                         "page": page,
                     },
                 )
