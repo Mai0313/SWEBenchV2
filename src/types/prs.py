@@ -210,7 +210,9 @@ class BranchReference(BaseModel):
 
 
 class Links(BaseModel):
-    self_link: dict = Field(..., validation_alias=AliasChoices("self", "self_link"), description="Self link")
+    self_link: dict = Field(
+        ..., validation_alias=AliasChoices("self", "self_link"), description="Self link"
+    )
     html: dict = Field(..., description="HTML link")
     issue: dict = Field(..., description="Issue link")
     comments: dict = Field(..., description="Comments link")
