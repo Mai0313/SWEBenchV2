@@ -151,8 +151,8 @@ The extracted data is saved in JSON format with the following structure:
         {
           "filename": "src/auth.py",
           "status": "modified",
-          "before_content": "# Original code...",
-          "after_content": "# Modified code...",
+          "before_edit": "# Original code...",
+          "after_edit": "# Modified code...",
           "additions": 5,
           "deletions": 2
         }
@@ -187,8 +187,8 @@ The extracted data is designed to work seamlessly with language models:
 # Example: Testing a model against extracted data
 for pr_data in result.prs:
     question = pr_data.question
-    context = {"files": {file.filename: file.before_content for file in pr_data.files}}
-    expected_answer = {file.filename: file.after_content for file in pr_data.files}
+    context = {"files": {file.filename: file.before_edit for file in pr_data.files}}
+    expected_answer = {file.filename: file.after_edit for file in pr_data.files}
 
     # Send to your LLM and compare similarity
     model_response = your_llm.generate(question, context)

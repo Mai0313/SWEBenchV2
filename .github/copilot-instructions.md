@@ -49,7 +49,7 @@ Represents changes to individual files:
 
 - File metadata (path, SHA, status)
 - Change statistics (additions, deletions, total changes)
-- Content states (before_content, after_content)
+- Content states (before_edit, after_edit)
 - Git patch information
 
 ### TrainingData Model (`models.py`)
@@ -154,14 +154,14 @@ class GitHubFile(BaseModel):
     Attributes:
         filename: Path to the modified file
         status: Type of change (added, modified, removed)
-        before_content: File content before changes
-        after_content: File content after changes
+        before_edit: File content before changes
+        after_edit: File content after changes
     """
 
     filename: str = Field(..., description="File path and name")
     status: str = Field(..., description="File status (added, modified, removed)")
-    before_content: str = Field(default="", description="File content before changes")
-    after_content: str = Field(default="", description="File content after changes")
+    before_edit: str = Field(default="", description="File content before changes")
+    after_edit: str = Field(default="", description="File content after changes")
 ```
 
 ## GitHub API Integration
