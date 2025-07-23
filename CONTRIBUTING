@@ -217,8 +217,14 @@ uv run pytest -m "not slow"
 ### Common Development Tasks
 
 ```bash
-# Test the CLI directly
+# Test the CLI directly (multiple methods available)
 swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
+
+# Alternative execution methods:
+poe main --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
+python src/swebenchv2/cli.py --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
+uv run cli --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
+uv run swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
 
 # Test both sync and async implementations
 uv run pytest tests/test_github.py tests/test_async_github.py
@@ -232,9 +238,6 @@ uv run ruff format src tests
 
 # Run full test suite with coverage
 uv run pytest --cov=src --cov-report=html --cov-report=term
-
-# Test CLI module directly (legacy method)
-uv run python -m swebenchv2.cli --repo_url="https://github.com/owner/repo"
 ```
 
 ### Writing Tests

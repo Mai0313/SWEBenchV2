@@ -124,11 +124,25 @@ result = extractor.extract_all_pr_data(save_json=True)
 print(f"從 {result.repository} 提取了 {result.total_prs} 個 PR")
 ```
 
-### 命令行使用（舊版）
+### 替代執行方法
+
+您可以通過多種不同方式運行工具：
 
 ```bash
-# 直接使用 Fire CLI 運行
-uv run python -m swebenchv2.cli --repo_url="https://github.com/owner/repo"
+# 方法 1：直接 CLI（pip install -e . 後）
+swebenchv2 --repo_url="https://github.com/owner/repo"
+
+# 方法 2：使用 poethepoet 任務
+poe main --repo_url="https://github.com/owner/repo"
+
+# 方法 3：直接 Python 模組執行
+python src/swebenchv2/cli.py --repo_url="https://github.com/owner/repo"
+
+# 方法 4：使用 uv run 與 cli 入口點
+uv run cli --repo_url="https://github.com/owner/repo"
+
+# 方法 5：使用 uv run 與 swebenchv2 入口點
+uv run swebenchv2 --repo_url="https://github.com/owner/repo"
 
 # 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
 ```
@@ -266,17 +280,18 @@ for pr_data in result.prs:
 
 ```
 ├── src/
-│   ├── datamodule/
-│   │   └── github.py          # 主要提取邏輯
-│   └── types/
-│       ├── models.py          # 數據模型
-│       ├── prs.py            # 拉取請求類型
-│       └── limit.py          # 速率限制處理
-├── tests/                     # 全面測試套件
-├── data/                      # 提取數據的輸出目錄
-├── main.py                   # 示例使用腳本
-├── pyproject.toml            # 項目配置
-└── README.md                 # 此文件
+│   └── swebenchv2/
+│       ├── cli.py                # CLI 介面和入口點
+│       ├── datamodule/
+│       │   └── github.py         # 主要提取邏輯
+│       └── typings/
+│           ├── models.py         # 數據模型
+│           ├── prs.py           # 拉取請求類型
+│           └── limit.py         # 速率限制處理
+├── tests/                        # 全面測試套件
+├── data/                         # 提取數據的輸出目錄
+├── pyproject.toml               # 包含 CLI 入口點的項目配置
+└── README.md                    # 此文件
 ```
 
 ## 🔬 評估方法

@@ -187,8 +187,8 @@ docs = ["docs_gen", "docs_run"]
 [tool.uv]
 managed = true
 package = true
-check-url = "https://test.pypi.org/simple"
-publish-url = "https://test.pypi.org/legacy/"
+check-url = "https://pypi.org/simple"
+publish-url = "https://pypi.org/legacy"
 compile-bytecode = true
 # concurrent-builds = 4
 # concurrent-downloads = 4

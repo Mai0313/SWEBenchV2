@@ -124,11 +124,25 @@ result = extractor.extract_all_pr_data(save_json=True)
 print(f"Extracted {result.total_prs} PRs from {result.repository}")
 ```
 
-### Command Line Usage (Legacy)
+### Alternative Execution Methods
+
+You can run the tool in several different ways:
 
 ```bash
-# Run with Fire CLI directly
-uv run python -m swebenchv2.cli --repo_url="https://github.com/owner/repo"
+# Method 1: Direct CLI (after pip install -e .)
+swebenchv2 --repo_url="https://github.com/owner/repo"
+
+# Method 2: Using poethepoet task
+poe main --repo_url="https://github.com/owner/repo"
+
+# Method 3: Direct Python module execution
+python src/swebenchv2/cli.py --repo_url="https://github.com/owner/repo"
+
+# Method 4: Using uv run with cli entry point
+uv run cli --repo_url="https://github.com/owner/repo"
+
+# Method 5: Using uv run with swebenchv2 entry point
+uv run swebenchv2 --repo_url="https://github.com/owner/repo"
 
 # The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
 ```
@@ -266,17 +280,18 @@ for pr_data in result.prs:
 
 ```
 ├── src/
-│   ├── datamodule/
-│   │   └── github.py          # Main extraction logic
-│   └── types/
-│       ├── models.py          # Data models
-│       ├── prs.py            # Pull request types
-│       └── limit.py          # Rate limit handling
-├── tests/                     # Comprehensive test suite
-├── data/                      # Output directory for extracted data
-├── main.py                   # Example usage script
-├── pyproject.toml            # Project configuration
-└── README.md                 # This file
+│   └── swebenchv2/
+│       ├── cli.py                # CLI interface and entry points
+│       ├── datamodule/
+│       │   └── github.py         # Main extraction logic
+│       └── typings/
+│           ├── models.py         # Data models
+│           ├── prs.py           # Pull request types
+│           └── limit.py         # Rate limit handling
+├── tests/                        # Comprehensive test suite
+├── data/                         # Output directory for extracted data
+├── pyproject.toml               # Project configuration with CLI entry points
+└── README.md                    # This file
 ```
 
 ## 🔬 Evaluation Methodology
