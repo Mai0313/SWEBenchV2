@@ -2,6 +2,8 @@
 
 ⚠️ **IMPORTANT**: After making any code changes, adding features, or updating functionality, you MUST update .github/copilot-instructions.md to reflect the current project state and capabilities.
 
+🎯 **DOCUMENTATION STATUS**: All functions in the codebase now include comprehensive Google-style docstrings with parameter types, return values, and detailed descriptions. This represents a major documentation improvement across the entire project.
+
 # Project Background
 
 SWEBenchV2 is an innovative alternative to SWE-Bench that focuses on measuring how closely AI models match real developer coding patterns rather than binary correctness. Instead of asking "Did the model get the right answer?", we ask "How closely does the model's approach match what experienced developers actually do?"
@@ -14,7 +16,7 @@ The project extracts training data from actual merged pull requests from GitHub 
 
 ### CLI Interface (`src/swebenchv2/cli.py`)
 
-The project provides a command-line interface for easy data extraction with multiple execution methods:
+The project provides a fully documented command-line interface for easy data extraction with multiple execution methods. All CLI functions now include comprehensive Google-style docstrings:
 
 - **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/owner/repo"`
 - **Sync Mode**: `swebenchv2 main --repo_url="..."`
@@ -36,7 +38,7 @@ swebenchv2 --repo_url="https://github.com/owner/repo"
 
 ### GitHubPRExtractor (`src/swebenchv2/datamodule/github.py`)
 
-The main extraction engine that handles:
+The main extraction engine with comprehensive documentation for all methods. Every function includes detailed Google-style docstrings covering:
 
 - **GitHub API Integration**: Connects to GitHub repositories using authenticated API requests
 - **PR Discovery**: Finds and filters merged pull requests using pagination and state filtering
@@ -56,16 +58,26 @@ Key Classes:
     - Parallel before/after content fetching for modified files
     - Concurrent processing across repository, PR, and file levels
 
-Key Methods:
+Key Methods (All Fully Documented):
 
-- `get_rate_limit()`: Checks current GitHub API rate limit status
-- `get_merged_prs()`: Retrieves all merged PRs from a repository with pagination
-- `get_pr_files()`: Gets list of files modified in a specific PR
-- `get_file_content()`: Fetches file content at a specific SHA/commit
-- `extract_pr_data()`: Processes a single PR into training data format
-- `extract_all_pr_data()`: Orchestrates full repository extraction
+- `get_rate_limit()`: Checks current GitHub API rate limit status with detailed return type documentation
+- `get_merged_prs()`: Retrieves all merged PRs from a repository with pagination handling documentation
+- `get_pr_files()`: Gets list of files modified in a specific PR with parameter type specifications
+- `get_file_content()`: Fetches file content at a specific SHA/commit with base64 decoding details
+- `extract_pr_data()`: Processes a single PR into training data format with comprehensive workflow documentation
+- `extract_all_pr_data()`: Orchestrates full repository extraction with complete parameter and return documentation
+
+**Documentation Coverage**: Both synchronous and asynchronous versions include:
+
+- Function purpose and behavior descriptions
+- Complete parameter documentation with types
+- Return value specifications with types
+- Error handling and edge case documentation
+- Performance optimization notes for async versions
 
 ## Data Models (`src/swebenchv2/typings/`)
+
+All data models now include comprehensive documentation for their methods and functionality.
 
 ### PullRequest Model (`prs.py`)
 
@@ -97,20 +109,23 @@ Final structured format for LLM training:
 
 ### ExtractionResult Model (`models.py`)
 
-Container for full extraction results:
+Container for full extraction results with documented save methods:
 
 - Repository metadata
 - Extraction timestamp
 - Complete dataset of all processed PRs
-- Built-in JSON export functionality
+- Built-in JSON export functionality with comprehensive documentation:
+    - `save_log()`: Synchronous JSON export with timestamp organization documentation
+    - `a_save_log()`: Asynchronous file operations with thread handling documentation
 
 ### Rate Limit Handling (`limit.py`)
 
-Manages GitHub API quotas:
+Manages GitHub API quotas with documented status checking:
 
 - Tracks remaining requests
 - Monitors reset timestamps
 - Provides structured rate limit information
+- `is_rate_limited()`: Documented boolean check for API quota status with clear return logic
 
 ## Configuration System
 
@@ -268,13 +283,22 @@ class GitHubFile(BaseModel):
     - `python src/swebenchv2/cli.py --help`
     - `uv run cli --help`
     - `uv run swebenchv2 --help`
+- **Documentation Testing**: Verify that all new functions include proper docstrings
+- **Test Documentation**: All test functions should also include clear docstrings explaining test purpose
 
 ## Documentation
 
-- Use Google-style docstrings for all functions and classes
+- **COMPLETED**: All functions now use comprehensive Google-style docstrings
+- **Current Status**: Every function includes parameter types, return values, and detailed descriptions
 - Document all configuration options and environment variables
 - Provide clear examples for common use cases
 - Keep README files updated with current functionality
+- **Documentation Standards**: All new functions must include:
+    - Clear purpose and behavior description
+    - Complete Args section with parameter types and descriptions
+    - Returns section with return type and meaning
+    - Examples for complex functions
+    - Consistent formatting with existing codebase
 
 ## Dependencies
 

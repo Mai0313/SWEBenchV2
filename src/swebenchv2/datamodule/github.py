@@ -98,6 +98,14 @@ class GitHubPRExtractorBase(GitHubAPISettings):
 
 class GitHubPRExtractor(GitHubPRExtractorBase):
     def get_rate_limit(self) -> RateLimit:
+        """Retrieve current GitHub API rate limit information.
+
+        Makes a synchronous request to GitHub's rate limit endpoint to check
+        current usage and remaining quota for API calls.
+
+        Returns:
+            RateLimit: Current rate limit status including remaining calls and reset time.
+        """
         with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10) as client:
             response = client.get("/rate_limit")
             rate_limit = RateLimit(**response.json())
@@ -105,6 +113,14 @@ class GitHubPRExtractor(GitHubPRExtractorBase):
             return rate_limit
 
     def get_merged_prs(self) -> list[PullRequest]:
+        """Fetch all merged pull requests from the GitHub repository.
+
+        Synchronously retrieves all merged pull requests by paginating through
+        the GitHub API, handling rate limits and filtering for merged PRs only.
+
+        Returns:
+            list[PullRequest]: List of all merged pull request objects from the repository.
+        """
         all_prs: list[PullRequest] = []
         page = 1
 
@@ -160,6 +176,17 @@ class GitHubPRExtractor(GitHubPRExtractorBase):
         return all_prs
 
     def get_pr_files(self, pr_number: int) -> list[FileData]:
+        """Retrieve all files modified in a specific pull request.
+
+        Fetches the list of files that were changed in the given pull request,
+        including metadata about additions, deletions, and file status.
+
+        Args:
+            pr_number (int): The pull request number to fetch files for.
+
+        Returns:
+            list[FileData]: List of file data objects representing all modified files.
+        """
         with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10) as client:
             logfire.info(f"Fetching files for PR #{pr_number}")
             response = client.get(
@@ -171,6 +198,18 @@ class GitHubPRExtractor(GitHubPRExtractorBase):
             return [FileData(**file) for file in response.json()]
 
     def get_file_content(self, file_path: str, sha: str) -> str:
+        """Retrieve the content of a file at a specific commit SHA.
+
+        Fetches the raw content of a file from the repository at the specified
+        commit, handling base64 decoding when necessary.
+
+        Args:
+            file_path (str): Path to the file within the repository.
+            sha (str): Git commit SHA to retrieve the file content from.
+
+        Returns:
+            str: The decoded file content as a string, or empty string if not found.
+        """
         with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10) as client:
             response = client.get(
                 url=f"/repos/{self.repo_owner}/{self.repo_name}/contents/{file_path}",
@@ -187,6 +226,17 @@ class GitHubPRExtractor(GitHubPRExtractorBase):
             return file_info.get("content", "")
 
     def extract_pr_data(self, pr_info: PullRequest) -> TrainingData:
+        """Extract complete training data for a single pull request.
+
+        Processes a pull request to gather all modified files and their content
+        before and after changes, creating a structured training data object.
+
+        Args:
+            pr_info (PullRequest): Pull request object containing metadata and references.
+
+        Returns:
+            TrainingData: Complete training data including PR info, formatted question, and file changes.
+        """
         # Get PR modified files
         files_data: list[FileData] = self.get_pr_files(pr_number=pr_info.number)
 
@@ -216,6 +266,17 @@ class GitHubPRExtractor(GitHubPRExtractorBase):
         return training_data
 
     def extract_all_pr_data(self, save_json: bool) -> ExtractionResult:
+        """Extract training data from all merged pull requests in the repository.
+
+        Orchestrates the complete extraction process by fetching all merged PRs
+        and processing each one to create comprehensive training datasets.
+
+        Args:
+            save_json (bool): Whether to save the extraction results to a JSON file.
+
+        Returns:
+            ExtractionResult: Complete extraction results with all PR training data and metadata.
+        """
         logfire.info(f"Extracting data from {self.repo_owner}/{self.repo_name}")
         # Get all merged PRs
         merged_prs = self.get_merged_prs()
@@ -241,6 +302,14 @@ class GitHubPRExtractor(GitHubPRExtractorBase):
 
 class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
     async def get_rate_limit(self) -> RateLimit:
+        """Retrieve current GitHub API rate limit information asynchronously.
+
+        Makes an asynchronous request to GitHub's rate limit endpoint to check
+        current usage and remaining quota for API calls.
+
+        Returns:
+            RateLimit: Current rate limit status including remaining calls and reset time.
+        """
         async with httpx.AsyncClient(
             base_url=self.base_url, headers=self.headers, timeout=10
         ) as client:
@@ -250,6 +319,14 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
             return rate_limit
 
     async def get_merged_prs(self) -> list[PullRequest]:
+        """Fetch all merged pull requests from the GitHub repository asynchronously.
+
+        Asynchronously retrieves all merged pull requests by paginating through
+        the GitHub API, handling rate limits and filtering for merged PRs only.
+
+        Returns:
+            list[PullRequest]: List of all merged pull request objects from the repository.
+        """
         all_prs: list[PullRequest] = []
         page = 1
 
@@ -307,6 +384,17 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
         return all_prs
 
     async def get_pr_files(self, pr_number: int) -> list[FileData]:
+        """Retrieve all files modified in a specific pull request asynchronously.
+
+        Asynchronously fetches the list of files that were changed in the given pull request,
+        including metadata about additions, deletions, and file status.
+
+        Args:
+            pr_number (int): The pull request number to fetch files for.
+
+        Returns:
+            list[FileData]: List of file data objects representing all modified files.
+        """
         async with httpx.AsyncClient(
             base_url=self.base_url, headers=self.headers, timeout=10
         ) as client:
@@ -320,6 +408,18 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
             return [FileData(**file) for file in response.json()]
 
     async def get_file_content(self, file_path: str, sha: str) -> str:
+        """Retrieve the content of a file at a specific commit SHA asynchronously.
+
+        Asynchronously fetches the raw content of a file from the repository at the specified
+        commit, handling base64 decoding when necessary.
+
+        Args:
+            file_path (str): Path to the file within the repository.
+            sha (str): Git commit SHA to retrieve the file content from.
+
+        Returns:
+            str: The decoded file content as a string, or empty string if not found.
+        """
         async with httpx.AsyncClient(
             base_url=self.base_url, headers=self.headers, timeout=10
         ) as client:
@@ -338,6 +438,17 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
             return file_info.get("content", "")
 
     async def extract_pr_data(self, pr_info: PullRequest) -> TrainingData:
+        """Extract complete training data for a single pull request asynchronously.
+
+        Asynchronously processes a pull request to gather all modified files and their content
+        before and after changes, using concurrent requests for optimal performance.
+
+        Args:
+            pr_info (PullRequest): Pull request object containing metadata and references.
+
+        Returns:
+            TrainingData: Complete training data including PR info, formatted question, and file changes.
+        """
         # Get PR modified files
         files_data: list[FileData] = await self.get_pr_files(pr_number=pr_info.number)
 
@@ -377,6 +488,18 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
         return training_data
 
     async def extract_all_pr_data(self, save_json: bool) -> ExtractionResult:
+        """Extract training data from all merged pull requests in the repository asynchronously.
+
+        Orchestrates the complete extraction process by fetching all merged PRs
+        and processing them concurrently to create comprehensive training datasets
+        with optimal performance through async operations.
+
+        Args:
+            save_json (bool): Whether to save the extraction results to a JSON file.
+
+        Returns:
+            ExtractionResult: Complete extraction results with all PR training data and metadata.
+        """
         merged_prs = await self.get_merged_prs()
         logfire.info(f"Found {len(merged_prs)} merged PRs from {self.repo_owner}/{self.repo_name}")
 
