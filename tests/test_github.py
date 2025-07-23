@@ -35,8 +35,7 @@ def test_get_file_content() -> None:
         repo_owner="mai0313", repo_name="repo_template", max_page=1, per_page=1
     )
     content = extractor.get_file_content(
-        file_path="README.md",
-        sha="69ef90b8aa8c99435f2f9b7284e5d5001392bc6a",
+        file_path="README.md", sha="69ef90b8aa8c99435f2f9b7284e5d5001392bc6a"
     )
     assert isinstance(content, str)
 

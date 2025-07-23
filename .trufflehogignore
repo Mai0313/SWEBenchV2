@@ -1,2 +1,0 @@
-# Ignore test files that may contain fake/mock data
-tests/test_github.py
