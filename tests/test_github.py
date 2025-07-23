@@ -36,7 +36,7 @@ def test_get_file_content() -> None:
     )
     content = extractor.get_file_content(
         file_path="README.md",
-        sha="69ef90b8aa8c99435f2f9b7284e5d5001392bc6a",  # trufflehog:ignore
+        sha="69ef90b8aa8c99435f2f9b7284e5d5001392bc6a",  # trufflehog: ignore
     )
     assert isinstance(content, str)
 
