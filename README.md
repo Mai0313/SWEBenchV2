@@ -87,8 +87,7 @@ from src.datamodule.github import GitHubPRExtractor
 
 # Initialize the extractor
 extractor = GitHubPRExtractor(
-    repo_owner="owner_name",
-    repo_name="repository_name",
+    repo_url="https://github.com/owner_name/repository_name",
     max_page=10,  # Limit pages to extract
     per_page=50,  # PRs per page
 )
@@ -111,8 +110,7 @@ uv run python main.py
 
 ```python
 extractor = GitHubPRExtractor(
-    repo_owner="your_org",
-    repo_name="your_repo",
+    repo_url="https://github.com/your_org/your_repo",
     max_page=5,  # Limit to first 5 pages
     per_page=100,  # 100 PRs per page
     token="your_token",  # Optional: set token directly
@@ -127,6 +125,30 @@ merged_prs = extractor.get_merged_prs()
 for pr in merged_prs[:5]:  # Process first 5 PRs
     pr_data = extractor.extract_pr_data(pr)
     print(f"Extracted data for PR #{pr.number}: {pr.title}")
+```
+
+### Asynchronous Usage
+
+For better performance with large repositories, use the asynchronous version:
+
+```python
+import asyncio
+from src.datamodule.github import AsyncGitHubPRExtractor
+
+
+async def extract_data():
+    extractor = AsyncGitHubPRExtractor(
+        repo_url="https://github.com/your_org/your_repo", max_page=5, per_page=100
+    )
+
+    # Async extraction
+    result = await extractor.extract_all_pr_data(save_json=True)
+    print(f"Extracted {result.total_prs} PRs asynchronously")
+    return result
+
+
+# Run async extraction
+result = asyncio.run(extract_data())
 ```
 
 ## 📁 Output Format
@@ -151,8 +173,8 @@ The extracted data is saved in JSON format with the following structure:
         {
           "filename": "src/auth.py",
           "status": "modified",
-          "before_content": "# Original code...",
-          "after_content": "# Modified code...",
+          "before_edit": "# Original code...",
+          "after_edit": "# Modified code...",
           "additions": 5,
           "deletions": 2
         }
@@ -187,8 +209,8 @@ The extracted data is designed to work seamlessly with language models:
 # Example: Testing a model against extracted data
 for pr_data in result.prs:
     question = pr_data.question
-    context = {"files": {file.filename: file.before_content for file in pr_data.files}}
-    expected_answer = {file.filename: file.after_content for file in pr_data.files}
+    context = {"files": {file.filename: file.before_edit for file in pr_data.files}}
+    expected_answer = {file.filename: file.after_edit for file in pr_data.files}
 
     # Send to your LLM and compare similarity
     model_response = your_llm.generate(question, context)
