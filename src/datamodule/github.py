@@ -41,9 +41,45 @@ class GitHubPRExtractor(BaseSettings):
         deprecated=False,
     )
     repo_owner: str = Field(
-        ..., description="Repository owner username or org name", frozen=False, deprecated=False
+        ...,
+        title="Owner name or Org Name",
+        description="Repository owner username or org name",
+        frozen=False,
+        deprecated=False,
     )
-    repo_name: str = Field(..., description="Repository name", frozen=False, deprecated=False)
+    repo_name: str = Field(
+        ...,
+        title="Repository Name",
+        description="Repository name in full.",
+        frozen=False,
+        deprecated=False,
+    )
+    max_page: int | None = Field(
+        default=None,
+        title="Max Page",
+        description="Maximum number of pages to fetch for PRs",
+        frozen=False,
+        deprecated=False,
+    )
+    per_page: int | None = Field(
+        default=None,
+        title="Per Page",
+        description="Number of PRs to fetch per page",
+        frozen=False,
+        deprecated=False,
+    )
+
+    @computed_field
+    @property
+    def _max_page(self) -> int:
+        """Return the maximum number of pages to fetch."""
+        return self.max_page if self.max_page else int(1e6)
+
+    @computed_field
+    @property
+    def _per_page(self) -> int:
+        """Return the number of PRs to fetch per page."""
+        return self.per_page if self.per_page else 100
 
     @computed_field
     @property
@@ -67,19 +103,22 @@ class GitHubPRExtractor(BaseSettings):
             logfire.info("Rate limit info", **rate_limit.rate.model_dump())
             return rate_limit
 
-    def get_merged_prs(self, per_page: int) -> list[PullRequest]:
+    def get_merged_prs(self) -> list[PullRequest]:
         all_prs: list[PullRequest] = []
         page = 1
 
         with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10) as client:
             while True:
+                if page > self._max_page:
+                    logfire.info(f"Reached max page limit: {self._max_page}")
+                    break
                 response = client.get(
                     url=f"/repos/{self.repo_owner}/{self.repo_name}/pulls",
                     params={
                         "state": "closed",
                         "sort": "updated",
                         "direction": "desc",
-                        "per_page": per_page,
+                        "per_page": self._per_page,
                         "page": page,
                     },
                 )
@@ -147,16 +186,6 @@ class GitHubPRExtractor(BaseSettings):
             return file_info.get("content", "")
 
     def extract_pr_data(self, pr_info: PullRequest) -> TrainingData | None:
-        """Extract detailed data for a single pull request.
-
-        Args:
-            repo_owner (str): Repository owner username
-            repo_name (str): Repository name
-            pr_info (PullRequest): Pull request data from GitHub API
-
-        Returns:
-            Optional[TrainingData]: Training data for the PR or None if failed
-        """
         # Get PR modified files
         files_data: list[FileData] = self.get_pr_files(pr_number=pr_info.number)
 
@@ -198,21 +227,13 @@ class GitHubPRExtractor(BaseSettings):
         return training_data
 
     def extract_all_pr_data(self) -> ExtractionResult:
-        """Extract all PR data from a repository.
-
-        Args:
-            repo_url (str): GitHub repository URL
-
-        Returns:
-            ExtractionResult: Complete extraction result
-        """
         output_filename = Path(f"./data/{self.repo_owner}_{self.repo_name}_pr_training_data.json")
         output_filename.parent.mkdir(parents=True, exist_ok=True)
 
         logfire.info(f"Extracting data from {self.repo_owner}/{self.repo_name}")
 
         # Get all merged PRs
-        merged_prs = self.get_merged_prs(per_page=100)
+        merged_prs = self.get_merged_prs()
         logfire.info(f"Found {len(merged_prs)} merged PRs")
 
         # Extract detailed data for each PR

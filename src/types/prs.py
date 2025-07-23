@@ -239,7 +239,7 @@ class PullRequest(BaseModel):
     locked: bool = Field(..., description="Whether pull request is locked")
     title: str = Field(..., description="Pull request title")
     user: User = Field(..., description="User who created the pull request")
-    body: str = Field(default="", description="Pull request body/description")
+    body: str | None = Field(default="", description="Pull request body/description")
     labels: list[Label] = Field(default_factory=list, description="Labels applied to pull request")
     milestone: Milestone | None = Field(
         default=None, description="Milestone assigned to pull request"
