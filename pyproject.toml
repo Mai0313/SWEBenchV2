@@ -68,8 +68,10 @@ authors = [
     { name = "Wei", email = "mai@mai0313.com" },
 ]
 dependencies = [
+    "logfire>=4.0.0",
     "pydantic>=2.11.5",
     "pydantic-settings>=2.9.1",
+    "requests>=2.32.3",
 ]
 readme = "README.md"
 requires-python = ">= 3.10"
