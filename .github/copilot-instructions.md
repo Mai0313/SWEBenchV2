@@ -21,6 +21,14 @@ The main extraction engine that handles:
 - **Rate Limit Management**: Automatically handles GitHub API rate limits with intelligent waiting
 - **Content Extraction**: Retrieves before/after file contents for each modified file in PRs
 - **Data Structuring**: Converts raw GitHub data into structured training datasets
+- **URL Parsing**: Accepts full GitHub URLs and automatically extracts owner/repository names
+- **Async Support**: Provides both synchronous and asynchronous implementations
+
+Key Classes:
+
+- `GitHubPRExtractorBase`: Base configuration class with URL parsing and shared settings
+- `GitHubPRExtractor`: Synchronous implementation for data extraction
+- `AsyncGitHubPRExtractor`: Asynchronous implementation for concurrent processing
 
 Key Methods:
 
@@ -87,18 +95,18 @@ Manages GitHub API quotas:
 
 ### Extraction Parameters
 
-- `repo_owner`: Target repository owner/organization
-- `repo_name`: Target repository name
+- `repo_url`: Target repository URL (e.g., `https://github.com/owner/repo` or `owner/repo`)
 - `max_page`: Limit pagination depth
 - `per_page`: Results per API request page
+- `token`: Optional direct token specification (overrides environment variable)
 
 ## Data Flow Architecture
 
-1. **Input**: Repository specification (owner/repo)
-2. **Discovery**: Find all merged PRs using GitHub API
-3. **Analysis**: For each PR, extract file changes and content
-4. **Processing**: Convert to structured training format
-5. **Output**: JSON dataset ready for LLM evaluation
+1. **Input**: Repository specification (URL or owner/repo format)
+2. **Discovery**: Find all merged PRs using GitHub API with intelligent pagination
+3. **Analysis**: For each PR, extract file changes and content using before/after SHAs
+4. **Processing**: Convert to structured training format with proper field mapping
+5. **Output**: JSON dataset ready for LLM evaluation with comprehensive metadata
 
 ## Output Format
 
@@ -108,9 +116,9 @@ The system generates structured JSON containing:
 - Extraction timestamps
 - Array of training examples, each with:
     - Question: PR title and description
-    - Context: Before-state of modified files
-    - Expected Answer: After-state of modified files
-    - Metadata: PR details, file statistics, etc.
+    - Context: Before-state of modified files (before_edit field)
+    - Expected Answer: After-state of modified files (after_edit field)
+    - Metadata: PR details, file statistics, change counts, etc.
 
 ## Evaluation Philosophy
 

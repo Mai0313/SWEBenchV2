@@ -87,8 +87,7 @@ from src.datamodule.github import GitHubPRExtractor
 
 # 初始化提取器
 extractor = GitHubPRExtractor(
-    repo_owner="owner_name",
-    repo_name="repository_name",
+    repo_url="https://github.com/owner_name/repository_name",
     max_page=10,  # 限制提取頁面數
     per_page=50,  # 每頁 PR 數量
 )
@@ -111,8 +110,7 @@ uv run python main.py
 
 ```python
 extractor = GitHubPRExtractor(
-    repo_owner="your_org",
-    repo_name="your_repo",
+    repo_url="https://github.com/your_org/your_repo",
     max_page=5,  # 限制為前 5 頁
     per_page=100,  # 每頁 100 個 PR
     token="your_token",  # 可選：直接設置令牌
@@ -127,6 +125,30 @@ merged_prs = extractor.get_merged_prs()
 for pr in merged_prs[:5]:  # 處理前 5 個 PR
     pr_data = extractor.extract_pr_data(pr)
     print(f"已為 PR #{pr.number} 提取數據：{pr.title}")
+```
+
+### 異步使用
+
+對於大型儲存庫，使用異步版本可獲得更好的性能：
+
+```python
+import asyncio
+from src.datamodule.github import AsyncGitHubPRExtractor
+
+
+async def extract_data():
+    extractor = AsyncGitHubPRExtractor(
+        repo_url="https://github.com/your_org/your_repo", max_page=5, per_page=100
+    )
+
+    # 異步提取
+    result = await extractor.extract_all_pr_data(save_json=True)
+    print(f"異步提取了 {result.total_prs} 個 PR")
+    return result
+
+
+# 運行異步提取
+result = asyncio.run(extract_data())
 ```
 
 ## 📁 輸出格式
@@ -258,25 +280,3 @@ for pr_data in result.prs:
 [報告錯誤](https://github.com/Mai0313/swe_bench_v2/issues) • [請求功能](https://github.com/Mai0313/swe_bench_v2/issues) • [文檔](https://mai0313.github.io/swe_bench_v2/)
 
 </div>
-
-## 🤝 貢獻
-
-我們歡迎貢獻！請隨時：
-
-- 開啟問題回報錯誤或功能請求
-- 提交拉取請求進行改進
-- 分享您使用此模板的經驗
-
-## 📖 文檔
-
-詳細文檔請訪問：[https://mai0313.github.io/swe_bench_v2/](https://mai0313.github.io/swe_bench_v2/)
-
-## 👥 貢獻者
-
-[![Contributors](https://contrib.rocks/image?repo=Mai0313/swe_bench_v2)](https://github.com/Mai0313/swe_bench_v2/graphs/contributors)
-
-Made with [contrib.rocks](https://contrib.rocks)
-
-## 📄 授權
-
-本專案採用 MIT 授權 - 詳見 [LICENSE](LICENSE) 檔案。

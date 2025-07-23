@@ -87,8 +87,7 @@ from src.datamodule.github import GitHubPRExtractor
 
 # Initialize the extractor
 extractor = GitHubPRExtractor(
-    repo_owner="owner_name",
-    repo_name="repository_name",
+    repo_url="https://github.com/owner_name/repository_name",
     max_page=10,  # Limit pages to extract
     per_page=50,  # PRs per page
 )
@@ -111,8 +110,7 @@ uv run python main.py
 
 ```python
 extractor = GitHubPRExtractor(
-    repo_owner="your_org",
-    repo_name="your_repo",
+    repo_url="https://github.com/your_org/your_repo",
     max_page=5,  # Limit to first 5 pages
     per_page=100,  # 100 PRs per page
     token="your_token",  # Optional: set token directly
@@ -127,6 +125,30 @@ merged_prs = extractor.get_merged_prs()
 for pr in merged_prs[:5]:  # Process first 5 PRs
     pr_data = extractor.extract_pr_data(pr)
     print(f"Extracted data for PR #{pr.number}: {pr.title}")
+```
+
+### Asynchronous Usage
+
+For better performance with large repositories, use the asynchronous version:
+
+```python
+import asyncio
+from src.datamodule.github import AsyncGitHubPRExtractor
+
+
+async def extract_data():
+    extractor = AsyncGitHubPRExtractor(
+        repo_url="https://github.com/your_org/your_repo", max_page=5, per_page=100
+    )
+
+    # Async extraction
+    result = await extractor.extract_all_pr_data(save_json=True)
+    print(f"Extracted {result.total_prs} PRs asynchronously")
+    return result
+
+
+# Run async extraction
+result = asyncio.run(extract_data())
 ```
 
 ## 📁 Output Format
