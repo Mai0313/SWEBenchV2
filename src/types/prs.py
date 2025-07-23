@@ -1,7 +1,7 @@
 from enum import Enum
 from datetime import datetime
 
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel, ConfigDict
 
 
 class UserType(str, Enum):
@@ -25,6 +25,7 @@ class AuthorAssociation(str, Enum):
 
 
 class User(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
     login: str = Field(..., description="GitHub username")
     id: int = Field(..., description="Unique user ID")
     node_id: str = Field(..., description="GraphQL node ID")
@@ -220,6 +221,7 @@ class Links(BaseModel):
 
 
 class PullRequest(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
     url: str = Field(..., description="API URL for pull request")
     id: int = Field(..., description="Unique pull request ID")
     node_id: str = Field(..., description="GraphQL node ID")

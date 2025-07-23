@@ -40,6 +40,10 @@ class GitHubPRExtractor(BaseSettings):
         frozen=False,
         deprecated=False,
     )
+    repo_owner: str = Field(
+        ..., description="Repository owner username or org name", frozen=False, deprecated=False
+    )
+    repo_name: str = Field(..., description="Repository name", frozen=False, deprecated=False)
 
     @computed_field
     @property
@@ -60,27 +64,17 @@ class GitHubPRExtractor(BaseSettings):
                 logfire.error(f"Error checking rate limit: {response.status_code}")
                 raise Exception("Failed to fetch rate limit information")
             rate_limit = RateLimit(**response.json())
-            logfire.info("Rate limit info", **rate_limit.model_dump())
+            logfire.info("Rate limit info", **rate_limit.rate.model_dump())
             return rate_limit
 
-    def get_merged_prs(self, repo_owner: str, repo_name: str, per_page: int) -> list[PullRequest]:
-        """Fetch all merged pull requests from a repository.
-
-        Args:
-            repo_owner (str): Repository owner username
-            repo_name (str): Repository name
-            per_page (int): Number of PRs per page
-
-        Returns:
-            List[PullRequest]: List of merged pull request data
-        """
+    def get_merged_prs(self, per_page: int) -> list[PullRequest]:
         all_prs: list[PullRequest] = []
         page = 1
 
         with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10) as client:
             while True:
                 response = client.get(
-                    url=f"/repos/{repo_owner}/{repo_name}/pulls",
+                    url=f"/repos/{self.repo_owner}/{self.repo_name}/pulls",
                     params={
                         "state": "closed",
                         "sort": "updated",
@@ -115,20 +109,14 @@ class GitHubPRExtractor(BaseSettings):
 
         return all_prs
 
-    def get_pr_files(self, repo_owner: str, repo_name: str, pr_number: int) -> list[FileData]:
-        """Fetch the list of files modified in a pull request.
-
-        Args:
-            repo_owner (str): Repository owner username
-            repo_name (str): Repository name
-            pr_number (int): Pull request number
-
-        Returns:
-            List[FileData]: List of modified files information
-        """
+    def get_pr_files(self, pr_number: int) -> list[FileData]:
         with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10) as client:
-            logfire.info(f"Fetching files for PR #{pr_number} in {repo_owner}/{repo_name}")
-            response = client.get(url=f"/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/files")
+            logfire.info(
+                f"Fetching files for PR #{pr_number} in {self.repo_owner}/{self.repo_name}"
+            )
+            response = client.get(
+                url=f"/repos/{self.repo_owner}/{self.repo_name}/pulls/{pr_number}/files"
+            )
 
             if response.status_code != 200:
                 logfire.error(f"Error fetching PR files: {response.status_code}")
@@ -138,26 +126,14 @@ class GitHubPRExtractor(BaseSettings):
             pr_files = [FileData(**file) for file in response_list]
             return pr_files
 
-    def get_file_content(
-        self, repo_owner: str, repo_name: str, file_path: str, sha: str
-    ) -> str | None:
-        """Fetch file content at a specific commit SHA.
-
-        Args:
-            repo_owner (str): Repository owner username
-            repo_name (str): Repository name
-            file_path (str): Path to the file
-            sha (str): Commit SHA
-
-        Returns:
-            Optional[str]: File content or None if failed to fetch
-        """
+    def get_file_content(self, file_path: str, sha: str) -> str | None:
         with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10) as client:
             logfire.info(
-                f"Fetching content for {file_path} at SHA {sha} in {repo_owner}/{repo_name}"
+                f"Fetching content for {file_path} at SHA {sha} in {self.repo_owner}/{self.repo_name}"
             )
             response = client.get(
-                url=f"/repos/{repo_owner}/{repo_name}/contents/{file_path}", params={"ref": sha}
+                url=f"/repos/{self.repo_owner}/{self.repo_name}/contents/{file_path}",
+                params={"ref": sha},
             )
 
             if response.status_code != 200:
@@ -170,9 +146,7 @@ class GitHubPRExtractor(BaseSettings):
 
             return file_info.get("content", "")
 
-    def extract_pr_data(
-        self, repo_owner: str, repo_name: str, pr_info: PullRequest
-    ) -> TrainingData | None:
+    def extract_pr_data(self, pr_info: PullRequest) -> TrainingData | None:
         """Extract detailed data for a single pull request.
 
         Args:
@@ -184,9 +158,7 @@ class GitHubPRExtractor(BaseSettings):
             Optional[TrainingData]: Training data for the PR or None if failed
         """
         # Get PR modified files
-        files_data: list[FileData] = self.get_pr_files(
-            repo_owner=repo_owner, repo_name=repo_name, pr_number=pr_info.number
-        )
+        files_data: list[FileData] = self.get_pr_files(pr_number=pr_info.number)
 
         # Process each modified file
         all_files: list[FileData] = []
@@ -194,10 +166,7 @@ class GitHubPRExtractor(BaseSettings):
             if file_info.status == "removed":
                 # File was deleted
                 before_content = self.get_file_content(
-                    repo_owner=repo_owner,
-                    repo_name=repo_name,
-                    file_path=file_info.filename,
-                    sha=pr_info.base.sha,
+                    file_path=file_info.filename, sha=pr_info.base.sha
                 )
                 file_info.before_content = before_content or ""
                 file_info.after_content = ""
@@ -205,10 +174,7 @@ class GitHubPRExtractor(BaseSettings):
             elif file_info.status == "added":
                 # File was added
                 after_content = self.get_file_content(
-                    repo_owner=repo_owner,
-                    repo_name=repo_name,
-                    file_path=file_info.filename,
-                    sha=pr_info.head.sha,
+                    file_path=file_info.filename, sha=pr_info.head.sha
                 )
                 file_info.before_content = ""
                 file_info.after_content = after_content or ""
@@ -216,16 +182,10 @@ class GitHubPRExtractor(BaseSettings):
             else:
                 # File was modified
                 before_content = self.get_file_content(
-                    repo_owner=repo_owner,
-                    repo_name=repo_name,
-                    file_path=file_info.filename,
-                    sha=pr_info.base.sha,
+                    file_path=file_info.filename, sha=pr_info.base.sha
                 )
                 after_content = self.get_file_content(
-                    repo_owner=repo_owner,
-                    repo_name=repo_name,
-                    file_path=file_info.filename,
-                    sha=pr_info.head.sha,
+                    file_path=file_info.filename, sha=pr_info.head.sha
                 )
                 file_info.before_content = before_content or ""
                 file_info.after_content = after_content or ""
@@ -237,7 +197,7 @@ class GitHubPRExtractor(BaseSettings):
         training_data = TrainingData(pr_info=pr_info, question=question, files=all_files)
         return training_data
 
-    def extract_all_pr_data(self, repo_url: str) -> ExtractionResult:
+    def extract_all_pr_data(self) -> ExtractionResult:
         """Extract all PR data from a repository.
 
         Args:
@@ -246,30 +206,25 @@ class GitHubPRExtractor(BaseSettings):
         Returns:
             ExtractionResult: Complete extraction result
         """
-        # Parse repository URL
-        parts = repo_url.replace("https://github.com/", "").split("/")
-        repo_owner, repo_name = parts[0], parts[1]
-        output_filename = Path(f"./data/{repo_owner}_{repo_name}_pr_training_data.json")
+        output_filename = Path(f"./data/{self.repo_owner}_{self.repo_name}_pr_training_data.json")
         output_filename.parent.mkdir(parents=True, exist_ok=True)
 
-        logfire.info(f"Extracting data from {repo_owner}/{repo_name}")
+        logfire.info(f"Extracting data from {self.repo_owner}/{self.repo_name}")
 
         # Get all merged PRs
-        merged_prs = self.get_merged_prs(repo_owner=repo_owner, repo_name=repo_name, per_page=100)
+        merged_prs = self.get_merged_prs(per_page=100)
         logfire.info(f"Found {len(merged_prs)} merged PRs")
 
         # Extract detailed data for each PR
         all_training_data: list[TrainingData] = []
 
         for pr_info in merged_prs:
-            pr_data = self.extract_pr_data(
-                repo_owner=repo_owner, repo_name=repo_name, pr_info=pr_info
-            )
+            pr_data = self.extract_pr_data(pr_info=pr_info)
             if pr_data:
                 all_training_data.append(pr_data)
 
         data = ExtractionResult(
-            repository=f"{repo_owner}/{repo_name}",
+            repository=f"{self.repo_owner}/{self.repo_name}",
             extracted_at=datetime.now().isoformat(),
             total_prs=len(all_training_data),
             prs=all_training_data,
