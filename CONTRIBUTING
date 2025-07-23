@@ -161,7 +161,7 @@ The URL parsing is handled automatically by the `GitHubPRExtractorBase` class us
 
 ### Asynchronous Support
 
-For performance-critical applications, use the async version:
+For performance-critical applications, use the async version with optimized concurrent processing:
 
 ```python
 from src.datamodule.github import AsyncGitHubPRExtractor
@@ -171,13 +171,17 @@ async def extract_data():
     extractor = AsyncGitHubPRExtractor(
         repo_url="https://github.com/owner/repo"
     )
+    # Multi-level concurrency optimization:
+    # 1. File-level: concurrent before/after content fetching with asyncio.gather()
+    # 2. PR-level: concurrent file processing with semaphore-controlled limits
+    # 3. Repository-level: concurrent PR batch processing
     result = await extractor.extract_all_pr_data(save_json=True)
     return result
 
 # Remember to use pytest.mark.asyncio for async tests
 @pytest.mark.asyncio
 async def test_async_extraction():
-    # Async test implementation
+    # Test async performance optimizations
     pass
 ```
 
@@ -284,7 +288,7 @@ We use pytest markers to categorize tests:
 
 ### Testing Both Sync and Async Versions
 
-When adding new functionality, ensure both synchronous and asynchronous versions are tested:
+When adding new functionality, ensure both synchronous and asynchronous versions are tested, with particular attention to async performance optimizations:
 
 ```python
 # Sync test
@@ -292,8 +296,20 @@ def test_extract_pr_data_sync():
     extractor = GitHubPRExtractor(repo_url="https://github.com/owner/repo")
     # Test implementation
 
-# Async test
+# Async test with concurrency validation
 @pytest.mark.asyncio
+async def test_extract_pr_data_async():
+    extractor = AsyncGitHubPRExtractor(repo_url="https://github.com/owner/repo")
+    # Test async implementation and verify concurrent processing
+    # Validate that asyncio.gather() is used for parallel operations
+
+# Performance comparison test
+@pytest.mark.asyncio
+async def test_async_performance_improvement():
+    """Test that async version shows performance gains from concurrent processing."""
+    # Compare execution times between sync and async implementations
+    pass
+```
 async def test_extract_pr_data_async():
     extractor = AsyncGitHubPRExtractor(repo_url="https://github.com/owner/repo")
     # Async test implementation

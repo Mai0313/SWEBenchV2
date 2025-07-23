@@ -67,14 +67,12 @@ class GitHubPRExtractorBase(BaseSettings):
     @computed_field
     @cached_property
     def repo_owner(self) -> str:
-        """Return the number of PRs to fetch per page."""
         parsed_url = urlparse(url=self.repo_url)
         return parsed_url.path.strip("/").split("/")[0]
 
     @computed_field
     @cached_property
     def repo_name(self) -> str:
-        """Return the number of PRs to fetch per page."""
         parsed_url = urlparse(url=self.repo_url)
         return parsed_url.path.strip("/").split("/")[1]
 
@@ -88,7 +86,7 @@ class GitHubPRExtractorBase(BaseSettings):
     @cached_property
     def _per_page(self) -> int:
         """Return the number of PRs to fetch per page."""
-        return self.per_page + 1 if self.per_page is not None else 100
+        return self.per_page if self.per_page is not None else 100
 
     @computed_field
     @cached_property
@@ -347,25 +345,35 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
         # Get PR modified files
         files_data: list[FileData] = await self.get_pr_files(pr_number=pr_info.number)
 
-        for file_info in files_data:
-            if file_info.status == "removed":
-                # File was deleted
-                file_info.before_edit = await self.get_file_content(
-                    file_path=file_info.filename, sha=pr_info.base.sha
-                )
-            elif file_info.status == "added":
-                # File was added
-                file_info.after_edit = await self.get_file_content(
-                    file_path=file_info.filename, sha=pr_info.head.sha
-                )
-            else:
-                # File was modified
-                file_info.before_edit = await self.get_file_content(
-                    file_path=file_info.filename, sha=pr_info.base.sha
-                )
-                file_info.after_edit = await self.get_file_content(
-                    file_path=file_info.filename, sha=pr_info.head.sha
-                )
+        semaphore = asyncio.Semaphore(10)
+
+        async def get_file_content_with_semaphore(file_info: FileData) -> None:
+            async with semaphore:
+                if file_info.status == "removed":
+                    # File was deleted
+                    file_info.before_edit = await self.get_file_content(
+                        file_path=file_info.filename, sha=pr_info.base.sha
+                    )
+                elif file_info.status == "added":
+                    # File was added
+                    file_info.after_edit = await self.get_file_content(
+                        file_path=file_info.filename, sha=pr_info.head.sha
+                    )
+                else:
+                    # File was modified - need to get both before and after content
+                    before_task = self.get_file_content(
+                        file_path=file_info.filename, sha=pr_info.base.sha
+                    )
+                    after_task = self.get_file_content(
+                        file_path=file_info.filename, sha=pr_info.head.sha
+                    )
+                    file_info.before_edit, file_info.after_edit = await asyncio.gather(
+                        before_task, after_task
+                    )
+
+        # Execute all file content fetching tasks concurrently
+        tasks = [get_file_content_with_semaphore(file_info) for file_info in files_data]
+        await asyncio.gather(*tasks)
 
         # Build training data
         question = f"PR#{pr_info.number}\nTitle:\n{pr_info.title}\nDescription:\n{pr_info.body}"
@@ -373,17 +381,19 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
         return training_data
 
     async def extract_all_pr_data(self, save_json: bool) -> ExtractionResult:
-        logfire.info(f"Extracting data from {self.repo_owner}/{self.repo_name}")
-        # Get all merged PRs
         merged_prs = await self.get_merged_prs()
-        logfire.info(f"Found {len(merged_prs)} merged PRs")
+        logfire.info(f"Found {len(merged_prs)} merged PRs from {self.repo_owner}/{self.repo_name}")
 
-        # Extract detailed data for each PR
-        all_training_data: list[TrainingData] = []
+        semaphore = asyncio.Semaphore(5)
 
-        for pr_info in merged_prs:
-            pr_data = await self.extract_pr_data(pr_info=pr_info)
-            all_training_data.append(pr_data)
+        async def extract_single_pr(pr_info: PullRequest) -> TrainingData:
+            async with semaphore:
+                return await self.extract_pr_data(pr_info=pr_info)
+
+        # Process all PRs concurrently
+        tasks = [extract_single_pr(pr_info) for pr_info in merged_prs]
+        all_training_data: list[TrainingData] = await asyncio.gather(*tasks)
+        logfire.info(f"Successfully extracted {len(all_training_data)} PR datasets")
 
         data = ExtractionResult(
             repository=f"{self.repo_owner}/{self.repo_name}",
@@ -392,5 +402,5 @@ class AsyncGitHubPRExtractor(GitHubPRExtractorBase):
             prs=all_training_data,
         )
         if save_json:
-            data.save_log()
+            await data.a_save_log()
         return data

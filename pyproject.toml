@@ -68,6 +68,7 @@ authors = [
     { name = "Wei", email = "mai@mai0313.com" },
 ]
 dependencies = [
+    "fire>=0.7.0",
     "logfire>=4.0.0",
     "pydantic>=2.11.5",
     "pydantic-settings>=2.9.1",

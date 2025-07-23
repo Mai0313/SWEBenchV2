@@ -22,13 +22,17 @@ The main extraction engine that handles:
 - **Content Extraction**: Retrieves before/after file contents for each modified file in PRs
 - **Data Structuring**: Converts raw GitHub data into structured training datasets
 - **URL Parsing**: Accepts full GitHub URLs and automatically extracts owner/repository names
-- **Async Support**: Provides both synchronous and asynchronous implementations
+- **High-Performance Async**: Multi-level concurrent processing with `asyncio.gather()` optimizations
 
 Key Classes:
 
 - `GitHubPRExtractorBase`: Base configuration class with URL parsing and shared settings
 - `GitHubPRExtractor`: Synchronous implementation for data extraction
-- `AsyncGitHubPRExtractor`: Asynchronous implementation for concurrent processing
+- `AsyncGitHubPRExtractor`: Asynchronous implementation with optimized concurrent processing featuring:
+    - Multi-level `asyncio.gather()` usage for maximum throughput
+    - Semaphore-controlled concurrency (5 for PRs, 10 for files)
+    - Parallel before/after content fetching for modified files
+    - Concurrent processing across repository, PR, and file levels
 
 Key Methods:
 
@@ -104,9 +108,18 @@ Manages GitHub API quotas:
 
 1. **Input**: Repository specification (URL or owner/repo format)
 2. **Discovery**: Find all merged PRs using GitHub API with intelligent pagination
-3. **Analysis**: For each PR, extract file changes and content using before/after SHAs
-4. **Processing**: Convert to structured training format with proper field mapping
+3. **Analysis**: For each PR, extract file changes and content using concurrent before/after SHA fetching
+4. **Processing**: Convert to structured training format with parallel file content retrieval
 5. **Output**: JSON dataset ready for LLM evaluation with comprehensive metadata
+
+### Performance Optimizations
+
+The async implementation uses multi-level concurrency:
+
+- **Repository Level**: All PRs processed concurrently with semaphore limits
+- **PR Level**: All modified files processed simultaneously
+- **File Level**: Before/after content fetched in parallel using `asyncio.gather()`
+- **Rate Limiting**: Intelligent semaphore control (5 for PRs, 10 for files) to respect API limits
 
 ## Output Format
 
@@ -179,6 +192,7 @@ class GitHubFile(BaseModel):
 - Implement robust error handling for API failures
 - Log all API interactions for debugging
 - Cache API responses when appropriate to reduce requests
+- Leverage `asyncio.gather()` for parallel API calls in async implementations
 
 ## Data Processing
 
@@ -186,6 +200,7 @@ class GitHubFile(BaseModel):
 - Handle edge cases (deleted files, binary files, large files)
 - Preserve all relevant metadata for downstream analysis
 - Ensure data consistency across the entire extraction pipeline
+- Optimize concurrent processing using semaphore-controlled async operations
 
 ## Error Handling
 
