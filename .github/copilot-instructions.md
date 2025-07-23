@@ -12,7 +12,29 @@ The project extracts training data from actual merged pull requests from GitHub 
 
 ## Core Data Extraction System
 
-### GitHubPRExtractor (`src/datamodule/github.py`)
+### CLI Interface (`src/swebenchv2/cli.py`)
+
+The project provides a command-line interface for easy data extraction with multiple execution methods:
+
+- **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/owner/repo"`
+- **Sync Mode**: `swebenchv2 main --repo_url="..."`
+- **Async Mode**: `swebenchv2 a_main --repo_url="..."` (recommended for large repositories)
+- **Poethepoet Task**: `poe main --repo_url="..."`
+- **Python Module**: `python src/swebenchv2/cli.py --repo_url="..."`
+- **UV Run CLI**: `uv run cli --repo_url="..."`
+- **UV Run SWEBenchV2**: `uv run swebenchv2 --repo_url="..."`
+- **Custom Parameters**: `--max_page`, `--per_page` for fine-tuning extraction
+- **JSON Output**: Automatically saves to `./data/{owner}/{repo}/log_{timestamp}.json`
+
+Installation for CLI usage:
+
+```bash
+uv pip install -e .  # Install package in development mode
+export GITHUB_TOKEN="your_token_here"
+swebenchv2 --repo_url="https://github.com/owner/repo"
+```
+
+### GitHubPRExtractor (`src/swebenchv2/datamodule/github.py`)
 
 The main extraction engine that handles:
 
@@ -43,7 +65,7 @@ Key Methods:
 - `extract_pr_data()`: Processes a single PR into training data format
 - `extract_all_pr_data()`: Orchestrates full repository extraction
 
-## Data Models (`src/types/`)
+## Data Models (`src/swebenchv2/typings/`)
 
 ### PullRequest Model (`prs.py`)
 
@@ -91,6 +113,31 @@ Manages GitHub API quotas:
 - Provides structured rate limit information
 
 ## Configuration System
+
+### CLI Entry Points
+
+The package is configured with CLI entry points in `pyproject.toml`:
+
+```toml
+[project.scripts]
+cli = "swebenchv2.cli:main"
+swebenchv2 = "swebenchv2.cli:main"
+```
+
+This allows users to run the tool directly from the command line after installation using multiple methods:
+
+- `swebenchv2 --repo_url="..."`
+- `uv run cli --repo_url="..."`
+- `uv run swebenchv2 --repo_url="..."`
+
+Additionally, there's a poethepoet task configured in `pyproject.toml`:
+
+```toml
+[tool.poe.tasks]
+main = "python ./src/swebenchv2/cli.py"
+```
+
+This enables running with `poe main --repo_url="..."` for development convenience.
 
 ### Environment Variables
 
@@ -215,6 +262,12 @@ class GitHubFile(BaseModel):
 - Mock GitHub API calls in tests to avoid rate limiting
 - Test edge cases (empty repos, no merged PRs, API failures)
 - Validate data model serialization/deserialization
+- Test CLI functionality after package installation with multiple execution methods:
+    - `swebenchv2 --help`
+    - `poe main --help`
+    - `python src/swebenchv2/cli.py --help`
+    - `uv run cli --help`
+    - `uv run swebenchv2 --help`
 
 ## Documentation
 

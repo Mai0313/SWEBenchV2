@@ -1,3 +1,0 @@
-import logfire
-
-logfire.configure()

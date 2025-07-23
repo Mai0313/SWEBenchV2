@@ -3,12 +3,12 @@
 [![python](https://img.shields.io/badge/-Python_3.10_%7C_3.11_%7C_3.12-blue?logo=python&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![uv](https://img.shields.io/badge/-uv_dependency_management-2C5F2D?logo=python&logoColor=white)](https://docs.astral.sh/uv/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![tests](https://github.com/Mai0313/swe_bench_v2/actions/workflows/test.yml/badge.svg)](https://github.com/Mai0313/swe_bench_v2/actions/workflows/test.yml)
-[![code-quality](https://github.com/Mai0313/swe_bench_v2/actions/workflows/code-quality-check.yml/badge.svg)](https://github.com/Mai0313/swe_bench_v2/actions/workflows/code-quality-check.yml)
-[![codecov](https://codecov.io/gh/Mai0313/swe_bench_v2/branch/master/graph/badge.svg)](https://codecov.io/gh/Mai0313/swe_bench_v2)
-[![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/Mai0313/swe_bench_v2/tree/master?tab=License-1-ov-file)
-[![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Mai0313/swe_bench_v2/pulls)
-[![contributors](https://img.shields.io/github/contributors/Mai0313/swe_bench_v2.svg)](https://github.com/Mai0313/swe_bench_v2/graphs/contributors)
+[![tests](https://github.com/Mai0313/SWEBenchV2/actions/workflows/test.yml/badge.svg)](https://github.com/Mai0313/SWEBenchV2/actions/workflows/test.yml)
+[![code-quality](https://github.com/Mai0313/SWEBenchV2/actions/workflows/code-quality-check.yml/badge.svg)](https://github.com/Mai0313/SWEBenchV2/actions/workflows/code-quality-check.yml)
+[![codecov](https://codecov.io/gh/Mai0313/SWEBenchV2/branch/master/graph/badge.svg)](https://codecov.io/gh/Mai0313/SWEBenchV2)
+[![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/Mai0313/SWEBenchV2/tree/master?tab=License-1-ov-file)
+[![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Mai0313/SWEBenchV2/pulls)
+[![contributors](https://img.shields.io/github/contributors/Mai0313/SWEBenchV2.svg)](https://github.com/Mai0313/SWEBenchV2/graphs/contributors)
 
 **一個創新的 SWE-Bench 替代方案，專注於測量 AI 模型與真實開發者編程模式的相似度，而非簡單的對錯判斷。**
 
@@ -63,8 +63,8 @@
 1. **克隆儲存庫：**
 
 ```bash
-git clone https://github.com/Mai0313/swe_bench_v2.git
-cd swe_bench_v2
+git clone https://github.com/Mai0313/SWEBenchV2.git
+cd SWEBenchV2
 ```
 
 1. **安裝依賴：**
@@ -73,18 +73,44 @@ cd swe_bench_v2
 uv sync
 ```
 
+1. **安裝為套件（用於 CLI 使用）：**
+
+```bash
+uv pip install -e .
+```
+
 1. **設置您的 GitHub 令牌：**
 
 ```bash
 export GITHUB_TOKEN="your_github_token_here"
 ```
 
-## � 使用方法
+## 📖 使用方法
 
-### 基本使用
+### CLI 使用（推薦）
+
+安裝套件後，您可以直接使用 `swebenchv2` 命令：
+
+```bash
+# 基本使用 - 從儲存庫提取 PR
+swebenchv2 --repo_url="https://github.com/owner/repo"
+
+# 使用自定義參數
+swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=5 --per_page=50
+
+# 使用同步模式
+swebenchv2 main --repo_url="https://github.com/owner/repo"
+
+# 使用異步模式（對大型儲存庫更快）
+swebenchv2 a_main --repo_url="https://github.com/owner/repo"
+
+# 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
+```
+
+### Python 庫使用
 
 ```python
-from src.datamodule.github import GitHubPRExtractor
+from swebenchv2.datamodule.github import GitHubPRExtractor
 
 # 初始化提取器
 extractor = GitHubPRExtractor(
@@ -98,11 +124,25 @@ result = extractor.extract_all_pr_data(save_json=True)
 print(f"從 {result.repository} 提取了 {result.total_prs} 個 PR")
 ```
 
-### 命令行使用
+### 替代執行方法
+
+您可以通過多種不同方式運行工具：
 
 ```bash
-# 使用默認配置運行
-uv run python main.py
+# 方法 1：直接 CLI（pip install -e . 後）
+swebenchv2 --repo_url="https://github.com/owner/repo"
+
+# 方法 2：使用 poethepoet 任務
+poe main --repo_url="https://github.com/owner/repo"
+
+# 方法 3：直接 Python 模組執行
+python src/swebenchv2/cli.py --repo_url="https://github.com/owner/repo"
+
+# 方法 4：使用 uv run 與 cli 入口點
+uv run cli --repo_url="https://github.com/owner/repo"
+
+# 方法 5：使用 uv run 與 swebenchv2 入口點
+uv run swebenchv2 --repo_url="https://github.com/owner/repo"
 
 # 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
 ```
@@ -134,7 +174,7 @@ for pr in merged_prs[:5]:  # 處理前 5 個 PR
 
 ```python
 import asyncio
-from src.datamodule.github import AsyncGitHubPRExtractor
+from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 
 
 async def extract_data():
@@ -240,17 +280,18 @@ for pr_data in result.prs:
 
 ```
 ├── src/
-│   ├── datamodule/
-│   │   └── github.py          # 主要提取邏輯
-│   └── types/
-│       ├── models.py          # 數據模型
-│       ├── prs.py            # 拉取請求類型
-│       └── limit.py          # 速率限制處理
-├── tests/                     # 全面測試套件
-├── data/                      # 提取數據的輸出目錄
-├── main.py                   # 示例使用腳本
-├── pyproject.toml            # 項目配置
-└── README.md                 # 此文件
+│   └── swebenchv2/
+│       ├── cli.py                # CLI 介面和入口點
+│       ├── datamodule/
+│       │   └── github.py         # 主要提取邏輯
+│       └── typings/
+│           ├── models.py         # 數據模型
+│           ├── prs.py           # 拉取請求類型
+│           └── limit.py         # 速率限制處理
+├── tests/                        # 全面測試套件
+├── data/                         # 提取數據的輸出目錄
+├── pyproject.toml               # 包含 CLI 入口點的項目配置
+└── README.md                    # 此文件
 ```
 
 ## 🔬 評估方法
@@ -296,6 +337,6 @@ for pr_data in result.prs:
 
 **為 AI 和軟件開發社區用 ❤️ 製作**
 
-[報告錯誤](https://github.com/Mai0313/swe_bench_v2/issues) • [請求功能](https://github.com/Mai0313/swe_bench_v2/issues) • [文檔](https://mai0313.github.io/swe_bench_v2/)
+[報告錯誤](https://github.com/Mai0313/SWEBenchV2/issues) • [請求功能](https://github.com/Mai0313/SWEBenchV2/issues) • [文檔](https://mai0313.github.io/SWEBenchV2/)
 
 </div>

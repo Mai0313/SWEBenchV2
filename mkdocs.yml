@@ -1,9 +1,9 @@
 site_name: SWEBenchV2
-site_url: https://mai0313.github.io/swe_bench_v2/
+site_url: https://mai0313.github.io/SWEBenchV2/
 site_author: Wei Lee
 
-repo_name: Mai0313/swe_bench_v2
-repo_url: https://github.com/Mai0313/swe_bench_v2
+repo_name: Mai0313/SWEBenchV2
+repo_url: https://github.com/Mai0313/SWEBenchV2
 edit_uri: edit/master/docs/
 
 docs_dir: docs
@@ -164,7 +164,7 @@ plugins:
 extra:
   social:
   - icon: fontawesome/brands/github-alt
-    link: https://github.com/Mai0313/swe_bench_v2
+    link: https://github.com/Mai0313/SWEBenchV2
 
   alternate:
   - link: /

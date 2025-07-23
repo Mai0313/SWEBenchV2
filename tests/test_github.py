@@ -1,7 +1,7 @@
-from src.types.prs import PullRequest
-from src.types.limit import RateLimit
-from src.types.models import FileData, TrainingData, ExtractionResult
-from src.datamodule.github import GitHubPRExtractor
+from swebenchv2.typings.prs import PullRequest
+from swebenchv2.typings.limit import RateLimit
+from swebenchv2.typings.models import FileData, TrainingData, ExtractionResult
+from swebenchv2.datamodule.github import GitHubPRExtractor
 
 
 def test_get_rate_limit() -> None:

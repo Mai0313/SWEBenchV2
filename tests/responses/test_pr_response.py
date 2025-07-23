@@ -1,4 +1,4 @@
-from src.types.prs import PullRequest
+from swebenchv2.typings.prs import PullRequest
 
 
 def test_pull_request():
