@@ -12,7 +12,7 @@ def main() -> ExtractionResult:
     extractor = GitHubPRExtractor(
         repo_owner="mai0313", repo_name="repo_template", max_page=1, per_page=1
     )
-    data = extractor.extract_all_pr_data()
+    data = extractor.extract_all_pr_data(save_json=True)
     console.print(data.model_dump())
     return data
 

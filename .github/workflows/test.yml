@@ -78,6 +78,8 @@ jobs:
 
       - name: Run pytest
         if: steps.check_tests.outputs.has_tests == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           uv run pytest -vv
 

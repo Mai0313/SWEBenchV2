@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from datetime import datetime
 
 from pydantic import Field, BaseModel
 
@@ -37,7 +38,10 @@ class ExtractionResult(BaseModel):
         default_factory=list, description="List of training data for each PR"
     )
 
-    def save(self, output_filename: str | Path) -> str | Path:
+    def save(self) -> Path:
+        now = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_filename = Path(f"./data/{self.repository}/PR_{now}.json")
+        output_filename.parent.mkdir(parents=True, exist_ok=True)
         json_dict = self.model_dump(mode="json", exclude_none=True, exclude_unset=True)
         with open(output_filename, "w", encoding="utf-8") as f:
             json.dump(json_dict, f, ensure_ascii=False, indent=2)

@@ -53,7 +53,7 @@ def test_extract_all_pr_data() -> None:
     extractor = GitHubPRExtractor(
         repo_owner="mai0313", repo_name="repo_template", max_page=1, per_page=1
     )
-    data = extractor.extract_all_pr_data()
+    data = extractor.extract_all_pr_data(save_json=False)
     assert isinstance(data, ExtractionResult)
     assert isinstance(data.prs, list)
     if data.prs:

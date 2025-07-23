@@ -1,7 +1,6 @@
 import time
 import base64
 from typing import Any
-from pathlib import Path
 from datetime import datetime
 
 import httpx
@@ -225,12 +224,8 @@ class GitHubPRExtractor(BaseSettings):
         training_data = TrainingData(pr_info=pr_info, question=question, files=all_files)
         return training_data
 
-    def extract_all_pr_data(self) -> ExtractionResult:
-        output_filename = Path(f"./data/{self.repo_owner}_{self.repo_name}_pr_training_data.json")
-        output_filename.parent.mkdir(parents=True, exist_ok=True)
-
+    def extract_all_pr_data(self, save_json: bool) -> ExtractionResult:
         logfire.info(f"Extracting data from {self.repo_owner}/{self.repo_name}")
-
         # Get all merged PRs
         merged_prs = self.get_merged_prs()
         logfire.info(f"Found {len(merged_prs)} merged PRs")
@@ -249,5 +244,6 @@ class GitHubPRExtractor(BaseSettings):
             total_prs=len(all_training_data),
             prs=all_training_data,
         )
-        data.save(output_filename=output_filename)
+        if save_json:
+            data.save()
         return data
