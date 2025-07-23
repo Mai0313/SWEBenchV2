@@ -16,10 +16,35 @@ from swebenchv2.types.prs import PullRequest
 from swebenchv2.types.limit import RateLimit
 from swebenchv2.types.models import FileData, TrainingData, ExtractionResult
 
+logfire.configure(send_to_logfire=False)
 dotenv.load_dotenv()
 
 
-class GitHubPRExtractorBase(BaseSettings):
+class GitHubAPISettings(BaseSettings):
+    repo_url: str = Field(
+        ...,
+        title="Github Repository URL",
+        description="This should be a full url to the repository, e.g. `https://github.com/Mai0313/SWEBenchV2` or `Mai0313/SWEBenchV2`",
+        frozen=False,
+        deprecated=False,
+    )
+    max_page: int | None = Field(
+        default=None,
+        title="Max Page",
+        description="Maximum number of pages to fetch for PRs",
+        frozen=False,
+        deprecated=False,
+    )
+    per_page: int | None = Field(
+        default=None,
+        title="Per Page",
+        description="Number of PRs to fetch per page",
+        frozen=False,
+        deprecated=False,
+    )
+
+
+class GitHubPRExtractorBase(GitHubAPISettings):
     """GitHub PR data extractor for creating LLM training datasets.
 
     This class extracts merged pull requests from a GitHub repository
@@ -39,27 +64,6 @@ class GitHubPRExtractorBase(BaseSettings):
         default="https://api.github.com",
         validation_alias="GITHUB_API_BASE_URL",
         description="Base URL for GitHub API",
-        frozen=False,
-        deprecated=False,
-    )
-    repo_url: str = Field(
-        ...,
-        title="Github Repository URL",
-        description="This should be a full url to the repository, e.g. `https://github.com/Mai0313/SWEBenchV2`",
-        frozen=False,
-        deprecated=False,
-    )
-    max_page: int | None = Field(
-        default=None,
-        title="Max Page",
-        description="Maximum number of pages to fetch for PRs",
-        frozen=False,
-        deprecated=False,
-    )
-    per_page: int | None = Field(
-        default=None,
-        title="Per Page",
-        description="Number of PRs to fetch per page",
         frozen=False,
         deprecated=False,
     )

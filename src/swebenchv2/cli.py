@@ -1,16 +1,14 @@
 """GitHub PR data extractor for LLM training data generation."""
 
-from pydantic import BaseModel
-
 from swebenchv2.types.models import ExtractionResult
-from swebenchv2.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
+from swebenchv2.datamodule.github import (
+    GitHubAPISettings,
+    GitHubPRExtractor,
+    AsyncGitHubPRExtractor,
+)
 
 
-class SWEBench(BaseModel):
-    repo_url: str
-    max_page: int | None = 1
-    per_page: int | None = 5
-
+class SWEBench(GitHubAPISettings):
     def main(self) -> ExtractionResult:
         extractor = GitHubPRExtractor(
             repo_url=self.repo_url, max_page=self.max_page, per_page=self.per_page
