@@ -33,6 +33,7 @@ This approach assumes that merged pull requests represent consensus among experi
 - **⚡ High-Performance Async**: Multi-level concurrent processing with `asyncio.gather()` for maximum speed
 - **🚦 Smart Rate Limiting**: Built-in GitHub API rate limit management with semaphore-based concurrency control
 - **⚙️ Flexible Configuration**: Configurable extraction parameters for different use cases
+- **📚 Comprehensive Documentation**: All functions include detailed Google-style docstrings with parameter types and return values
 
 ## 📊 How It Works
 
@@ -119,9 +120,20 @@ extractor = GitHubPRExtractor(
     per_page=50,  # PRs per page
 )
 
-# Extract all PR data
+# Extract all PR data - now with comprehensive docstrings
 result = extractor.extract_all_pr_data(save_json=True)
 print(f"Extracted {result.total_prs} PRs from {result.repository}")
+
+# All methods now include detailed documentation
+# Check rate limits before extraction
+rate_limit = extractor.get_rate_limit()  # Returns RateLimit with remaining calls info
+print(f"Remaining requests: {rate_limit.rate.remaining}")
+
+# Get specific PR files with full documentation
+merged_prs = extractor.get_merged_prs()  # Returns list[PullRequest] with pagination
+for pr in merged_prs[:3]:
+    files = extractor.get_pr_files(pr.number)  # Returns list[FileData] for modified files
+    print(f"PR #{pr.number} modified {len(files)} files")
 ```
 
 ### Alternative Execution Methods
@@ -281,18 +293,49 @@ for pr_data in result.prs:
 ```
 ├── src/
 │   └── swebenchv2/
-│       ├── cli.py                # CLI interface and entry points
+│       ├── cli.py                # CLI interface with documented entry points
 │       ├── datamodule/
-│       │   └── github.py         # Main extraction logic
+│       │   └── github.py         # Main extraction logic with comprehensive docstrings
 │       └── typings/
-│           ├── models.py         # Data models
-│           ├── prs.py           # Pull request types
-│           └── limit.py         # Rate limit handling
+│           ├── models.py         # Data models with documented save methods
+│           ├── prs.py           # Pull request types and enums
+│           └── limit.py         # Rate limit handling with status checking
 ├── tests/                        # Comprehensive test suite
 ├── data/                         # Output directory for extracted data
 ├── pyproject.toml               # Project configuration with CLI entry points
 └── README.md                    # This file
 ```
+
+### Key Functions Documentation
+
+All core functions now include comprehensive Google-style docstrings:
+
+**CLI Functions (`cli.py`)**:
+
+- `SWEBench.main()` - Synchronous PR extraction with full documentation
+- `SWEBench.a_main()` - Asynchronous PR extraction with performance notes
+- `SWEBench.__call__()` - Callable interface documentation
+- `main()` - CLI entry point with Fire integration details
+
+**GitHub Integration (`github.py`)**:
+
+- `GitHubPRExtractor.get_rate_limit()` - Rate limit checking with return type info
+- `GitHubPRExtractor.get_merged_prs()` - PR fetching with pagination details
+- `GitHubPRExtractor.get_pr_files()` - File extraction with metadata handling
+- `GitHubPRExtractor.get_file_content()` - Content retrieval with SHA handling
+- `GitHubPRExtractor.extract_pr_data()` - Single PR processing documentation
+- `GitHubPRExtractor.extract_all_pr_data()` - Complete extraction orchestration
+
+**Async Versions** - All async methods include concurrency and performance documentation
+
+**Data Models (`models.py`)**:
+
+- `ExtractionResult.save_log()` - JSON export with timestamp organization
+- `ExtractionResult.a_save_log()` - Async file operations documentation
+
+**Rate Limiting (`limit.py`)**:
+
+- `RateLimit.is_rate_limited()` - API quota checking with boolean logic
 
 ## 🔬 Evaluation Methodology
 

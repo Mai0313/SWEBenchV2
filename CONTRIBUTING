@@ -86,8 +86,14 @@ When extending the codebase:
 1. **Implement in both sync and async versions** if applicable
 2. **Use proper type hints** and Pydantic models
 3. **Follow the established naming conventions**
-4. **Add comprehensive tests** for both versions
-5. **Update documentation** accordingly
+4. **Add comprehensive Google-style docstrings** to all new functions
+5. **Add comprehensive tests** for both versions
+6. **Update documentation** accordingly (README.md, README_cn.md, and this file)
+7. **Ensure docstrings include**:
+   - Clear function purpose and behavior description
+   - Complete Args section with types and descriptions
+   - Returns section with type and meaning
+   - Examples for complex functions
 
 ## 🛠️ Development Guidelines
 
@@ -117,6 +123,12 @@ uv run pre-commit run --all-files
 - **Maximum line length**: 99 characters
 - **Use absolute imports** over relative imports
 - **Document all public functions and classes** with Google-style docstrings
+- **All functions must include comprehensive docstrings** with:
+  - Clear purpose description
+  - Args section with parameter types and descriptions
+  - Returns section with return type and description
+  - Raises section for exceptions (when applicable)
+  - Example usage (when helpful)
 
 ### Pydantic Models
 
@@ -331,17 +343,20 @@ async def test_extract_pr_data_async():
 
 ### Docstring Style
 
-Use Google-style docstrings for all public functions and classes:
+Use Google-style docstrings for all public functions and classes. All functions in the codebase now follow this standard:
 
 ```python
 def extract_pr_data(self, pr_info: PullRequest) -> TrainingData:
-    """Extract training data from a single pull request.
+    """Extract complete training data for a single pull request.
+
+    Processes a pull request to gather all modified files and their content
+    before and after changes, creating a structured training data object.
 
     Args:
-        pr_info: The pull request information to process
+        pr_info (PullRequest): Pull request object containing metadata and references.
 
     Returns:
-        TrainingData object containing PR context and file changes
+        TrainingData: Complete training data including PR info, formatted question, and file changes.
 
     Raises:
         APIError: If GitHub API requests fail
@@ -353,6 +368,13 @@ def extract_pr_data(self, pr_info: PullRequest) -> TrainingData:
         >>> print(f"Files changed: {len(pr_data.files)}")
     """
 ```
+
+**Current Documentation Status**: All functions in the codebase now include comprehensive Google-style docstrings:
+
+- **CLI Functions** (`src/swebenchv2/cli.py`): All entry points documented
+- **GitHub Integration** (`src/swebenchv2/datamodule/github.py`): All sync and async methods documented
+- **Data Models** (`src/swebenchv2/typings/models.py`): Save methods documented
+- **Rate Limiting** (`src/swebenchv2/typings/limit.py`): Status checking methods documented
 
 ### README Updates
 
@@ -388,6 +410,9 @@ Ensure your PR meets these requirements:
 - [ ] **Documentation is updated** in both English and Chinese
 - [ ] **New features use the `repo_url`** parameter format
 - [ ] **Field names follow** the `before_edit`/`after_edit` convention
+- [ ] **All new functions include comprehensive Google-style docstrings**
+- [ ] **Docstrings follow the established format** with Args, Returns, and description sections
+- [ ] **Function documentation is consistent** with existing codebase standards
 
 ### PR Checklist
 

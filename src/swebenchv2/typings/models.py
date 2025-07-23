@@ -36,6 +36,14 @@ class ExtractionResult(BaseModel):
     prs: list[TrainingData] = Field(default=[], description="List of training data for each PR")
 
     def save_log(self) -> Path:
+        """Save extraction results to a timestamped JSON log file.
+
+        Creates a JSON file containing all extraction results in a structured format,
+        organized by repository name and timestamp for easy tracking and analysis.
+
+        Returns:
+            Path: Path to the created log file.
+        """
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_log = Path(f"./data/{self.repository}/log_{now}.json")
         output_log.parent.mkdir(parents=True, exist_ok=True)
@@ -44,4 +52,12 @@ class ExtractionResult(BaseModel):
         return output_log
 
     async def a_save_log(self) -> Path:
+        """Save extraction results to a timestamped JSON log file asynchronously.
+
+        Asynchronously creates a JSON file containing all extraction results,
+        running the file I/O operations in a separate thread to avoid blocking.
+
+        Returns:
+            Path: Path to the created log file.
+        """
         return await asyncio.to_thread(self.save_log)

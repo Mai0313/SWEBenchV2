@@ -37,4 +37,12 @@ class RateLimit(BaseModel):
     rate: RateLimitInfo
 
     def is_rate_limited(self) -> bool:
+        """Check if the current rate limit has been exceeded.
+
+        Determines whether the GitHub API rate limit has been reached
+        by checking if there are any remaining API calls available.
+
+        Returns:
+            bool: True if rate limit is exceeded (no remaining calls), False otherwise.
+        """
         return self.rate.remaining == 0

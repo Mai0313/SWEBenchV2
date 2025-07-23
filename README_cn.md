@@ -33,6 +33,7 @@
 - **⚡ 高性能異步處理**：使用 `asyncio.gather()` 多層並發處理，實現最大化速度
 - **🚦 智能速率限制**：內建 GitHub API 速率限制管理，配合 semaphore 並發控制
 - **⚙️ 靈活配置**：針對不同使用情況的可配置提取參數
+- **📚 完整文檔**：所有函數都包含詳細的 Google 風格文檔字符串，包含參數類型和返回值說明
 
 ## 📊 工作原理
 
@@ -119,9 +120,20 @@ extractor = GitHubPRExtractor(
     per_page=50,  # 每頁 PR 數量
 )
 
-# 提取所有 PR 數據
+# 提取所有 PR 數據 - 現在包含完整的文檔字符串
 result = extractor.extract_all_pr_data(save_json=True)
 print(f"從 {result.repository} 提取了 {result.total_prs} 個 PR")
+
+# 所有方法現在都包含詳細文檔
+# 提取前檢查速率限制
+rate_limit = extractor.get_rate_limit()  # 返回包含剩餘調用信息的 RateLimit
+print(f"剩餘請求數：{rate_limit.rate.remaining}")
+
+# 獲取特定 PR 文件，包含完整文檔
+merged_prs = extractor.get_merged_prs()  # 返回帶分頁的 list[PullRequest]
+for pr in merged_prs[:3]:
+    files = extractor.get_pr_files(pr.number)  # 返回修改文件的 list[FileData]
+    print(f"PR #{pr.number} 修改了 {len(files)} 個文件")
 ```
 
 ### 替代執行方法
@@ -281,18 +293,49 @@ for pr_data in result.prs:
 ```
 ├── src/
 │   └── swebenchv2/
-│       ├── cli.py                # CLI 介面和入口點
+│       ├── cli.py                # 包含文檔化入口點的 CLI 介面
 │       ├── datamodule/
-│       │   └── github.py         # 主要提取邏輯
+│       │   └── github.py         # 包含完整文檔字符串的主要提取邏輯
 │       └── typings/
-│           ├── models.py         # 數據模型
-│           ├── prs.py           # 拉取請求類型
-│           └── limit.py         # 速率限制處理
+│           ├── models.py         # 包含文檔化保存方法的數據模型
+│           ├── prs.py           # 拉取請求類型和枚舉
+│           └── limit.py         # 包含狀態檢查的速率限制處理
 ├── tests/                        # 全面測試套件
 ├── data/                         # 提取數據的輸出目錄
 ├── pyproject.toml               # 包含 CLI 入口點的項目配置
 └── README.md                    # 此文件
 ```
+
+### 核心函數文檔
+
+所有核心函數現在都包含完整的 Google 風格文檔字符串：
+
+**CLI 函數 (`cli.py`)**：
+
+- `SWEBench.main()` - 包含完整文檔的同步 PR 提取
+- `SWEBench.a_main()` - 包含性能說明的異步 PR 提取
+- `SWEBench.__call__()` - 可調用介面文檔
+- `main()` - 包含 Fire 整合詳情的 CLI 入口點
+
+**GitHub 整合 (`github.py`)**：
+
+- `GitHubPRExtractor.get_rate_limit()` - 包含返回類型信息的速率限制檢查
+- `GitHubPRExtractor.get_merged_prs()` - 包含分頁詳情的 PR 獲取
+- `GitHubPRExtractor.get_pr_files()` - 包含元數據處理的文件提取
+- `GitHubPRExtractor.get_file_content()` - 包含 SHA 處理的內容檢索
+- `GitHubPRExtractor.extract_pr_data()` - 單個 PR 處理文檔
+- `GitHubPRExtractor.extract_all_pr_data()` - 完整提取編排
+
+**異步版本** - 所有異步方法都包含並發和性能文檔
+
+**數據模型 (`models.py`)**：
+
+- `ExtractionResult.save_log()` - 包含時間戳組織的 JSON 導出
+- `ExtractionResult.a_save_log()` - 異步文件操作文檔
+
+**速率限制 (`limit.py`)**：
+
+- `RateLimit.is_rate_limited()` - 包含布爾邏輯的 API 配額檢查
 
 ## 🔬 評估方法
 
