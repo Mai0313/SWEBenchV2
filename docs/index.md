@@ -1,18 +1,18 @@
 # SWEBenchV2
 
+[![PyPI version](https://img.shields.io/pypi/v/swebenchv2.svg)](https://pypi.org/project/swebenchv2/)
 [![python](https://img.shields.io/badge/-Python_3.10_%7C_3.11_%7C_3.12-blue?logo=python&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![uv](https://img.shields.io/badge/-uv_dependency_management-2C5F2D?logo=python&logoColor=white)](https://docs.astral.sh/uv/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![tests](https://github.com/Mai0313/SWEBenchV2/actions/workflows/test.yml/badge.svg)](https://github.com/Mai0313/SWEBenchV2/actions/workflows/test.yml)
 [![code-quality](https://github.com/Mai0313/SWEBenchV2/actions/workflows/code-quality-check.yml/badge.svg)](https://github.com/Mai0313/SWEBenchV2/actions/workflows/code-quality-check.yml)
-[![codecov](https://codecov.io/gh/Mai0313/SWEBenchV2/branch/master/graph/badge.svg)](https://codecov.io/gh/Mai0313/SWEBenchV2)
 [![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/Mai0313/SWEBenchV2/tree/master?tab=License-1-ov-file)
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Mai0313/SWEBenchV2/pulls)
 [![contributors](https://img.shields.io/github/contributors/Mai0313/SWEBenchV2.svg)](https://github.com/Mai0313/SWEBenchV2/graphs/contributors)
 
 **An innovative alternative to SWE-Bench that focuses on measuring how closely AI models match real developer coding patterns rather than binary correctness.**
 
-**Other Languages**: [English](README.md) | [中文](README_cn.md)
+**Other Languages**: [English](index.md) | [中文](index_cn.md)
 
 ## 🚀 Overview
 
@@ -73,6 +73,12 @@ cd SWEBenchV2
 uv sync
 ```
 
+1. **Install as a package (for CLI usage):**
+
+```bash
+uv pip install -e .
+```
+
 1. **Set up your GitHub token:**
 
 ```bash
@@ -81,7 +87,27 @@ export GITHUB_TOKEN="your_github_token_here"
 
 ## 📖 Usage
 
-### Basic Usage
+### CLI Usage (Recommended)
+
+After installing the package, you can use the `swebenchv2` command directly:
+
+```bash
+# Basic usage - extract PRs from a repository
+swebenchv2 --repo_url="https://github.com/owner/repo"
+
+# With custom parameters
+swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=5 --per_page=50
+
+# Using synchronous mode
+swebenchv2 main --repo_url="https://github.com/owner/repo"
+
+# Using asynchronous mode (faster for large repositories)
+swebenchv2 a_main --repo_url="https://github.com/owner/repo"
+
+# The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
+```
+
+### Python Library Usage
 
 ```python
 from swebenchv2.datamodule.github import GitHubPRExtractor
@@ -98,11 +124,25 @@ result = extractor.extract_all_pr_data(save_json=True)
 print(f"Extracted {result.total_prs} PRs from {result.repository}")
 ```
 
-### Command Line Usage
+### Alternative Execution Methods
+
+You can run the tool in several different ways:
 
 ```bash
-# Run with default configuration
-uv run python main.py
+# Method 1: Direct CLI (after pip install -e .)
+swebenchv2 --repo_url="https://github.com/owner/repo"
+
+# Method 2: Using poethepoet task
+poe main --repo_url="https://github.com/owner/repo"
+
+# Method 3: Direct Python module execution
+python src/swebenchv2/cli.py --repo_url="https://github.com/owner/repo"
+
+# Method 4: Using uv run with cli entry point
+uv run cli --repo_url="https://github.com/owner/repo"
+
+# Method 5: Using uv run with swebenchv2 entry point
+uv run swebenchv2 --repo_url="https://github.com/owner/repo"
 
 # The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
 ```
@@ -240,17 +280,18 @@ for pr_data in result.prs:
 
 ```
 ├── src/
-│   ├── datamodule/
-│   │   └── github.py          # Main extraction logic
-│   └── types/
-│       ├── models.py          # Data models
-│       ├── prs.py            # Pull request types
-│       └── limit.py          # Rate limit handling
-├── tests/                     # Comprehensive test suite
-├── data/                      # Output directory for extracted data
-├── main.py                   # Example usage script
-├── pyproject.toml            # Project configuration
-└── README.md                 # This file
+│   └── swebenchv2/
+│       ├── cli.py                # CLI interface and entry points
+│       ├── datamodule/
+│       │   └── github.py         # Main extraction logic
+│       └── typings/
+│           ├── models.py         # Data models
+│           ├── prs.py           # Pull request types
+│           └── limit.py         # Rate limit handling
+├── tests/                        # Comprehensive test suite
+├── data/                         # Output directory for extracted data
+├── pyproject.toml               # Project configuration with CLI entry points
+└── README.md                    # This file
 ```
 
 ## 🔬 Evaluation Methodology
