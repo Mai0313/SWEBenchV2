@@ -40,7 +40,7 @@ class ExtractionResult(BaseModel):
 
     def save(self) -> Path:
         now = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_filename = Path(f"./data/{self.repository}/PR_{now}.json")
+        output_filename = Path(f"./data/{self.repository}/pr_{now}.json")
         output_filename.parent.mkdir(parents=True, exist_ok=True)
         json_dict = self.model_dump(mode="json", exclude_none=True, exclude_unset=True)
         with open(output_filename, "w", encoding="utf-8") as f:
