@@ -1,6 +1,6 @@
 """GitHub PR data extractor for LLM training data generation."""
 
-from swebenchv2.types.models import ExtractionResult
+from swebenchv2.typings.models import ExtractionResult
 from swebenchv2.datamodule.github import (
     GitHubAPISettings,
     GitHubPRExtractor,

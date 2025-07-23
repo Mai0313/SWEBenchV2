@@ -81,6 +81,7 @@ requires-python = ">= 3.10"
 license = { text = "MIT" }
 
 [project.scripts]
+cli = "swebenchv2.cli:main"
 swebenchv2 = "swebenchv2.cli:main"
 
 [project.urls]
@@ -173,8 +174,7 @@ content-type = "text/markdown"
 path = "README.md"
 
 [tool.poe.tasks]
-api = "python ./api.py"
-main = "python ./main.py"
+main = "python ./src/swebenchv2/cli.py"
 
 # Documentation
 docs_gen = "make gen-docs"
