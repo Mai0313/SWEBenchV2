@@ -9,9 +9,7 @@ console = Console()
 
 
 def main() -> ExtractionResult:
-    extractor = GitHubPRExtractor(
-        repo_owner="mai0313", repo_name="repo_template", max_page=1, per_page=1
-    )
+    extractor = GitHubPRExtractor(repo_owner="ag2ai", repo_name="ag2", max_page=10, per_page=100)
     data = extractor.extract_all_pr_data(save_json=True)
     console.print(data.model_dump())
     return data

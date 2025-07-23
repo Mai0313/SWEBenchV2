@@ -7,6 +7,7 @@ from pydantic import Field, BaseModel, ConfigDict, AliasChoices
 class UserType(str, Enum):
     user = "User"
     bot = "Bot"
+    org = "Organization"
 
 
 class PRState(str, Enum):
@@ -206,7 +207,7 @@ class BranchReference(BaseModel):
     ref: str = Field(..., description="Branch reference name")
     sha: str = Field(..., description="Commit SHA")
     user: User = Field(..., description="User who owns the branch")
-    repo: Repository = Field(..., description="Repository containing the branch")
+    repo: Repository | None = Field(default=None, description="Repository containing the branch")
 
 
 class Links(BaseModel):
