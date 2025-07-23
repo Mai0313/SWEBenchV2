@@ -1,0 +1,303 @@
+# Contributing to SWEBenchV2
+
+Thank you for your interest in contributing to SWEBenchV2! This document provides guidelines and information for contributors to help maintain code quality and project consistency.
+
+## 🚀 Quick Start
+
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/swe_bench_v2.git
+   cd swe_bench_v2
+   ```
+
+3. **Set up the development environment**:
+   ```bash
+   # Install uv if you haven't already
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+
+   # Install dependencies
+   uv sync
+
+   # Install pre-commit hooks
+   uv run pre-commit install
+   ```
+
+4. **Create a new branch** for your feature or bugfix:
+   ```bash
+   git checkout -b feature/your-feature-name
+   # or
+   git checkout -b fix/your-bugfix-name
+   ```
+
+## 📋 Types of Contributions
+
+We welcome various types of contributions:
+
+### 🐛 Bug Reports
+- Use the [bug report template](.github/ISSUE_TEMPLATE/bug_report.md)
+- Include steps to reproduce, expected behavior, and actual behavior
+- Provide system information (OS, Python version, etc.)
+
+### 💡 Feature Requests
+- Use the [feature request template](.github/ISSUE_TEMPLATE/feature_request.md)
+- Explain the use case and why this feature would be valuable
+- Provide examples of how the feature would be used
+
+### 🔧 Code Contributions
+- Bug fixes
+- New features
+- Performance improvements
+- Documentation improvements
+- Test coverage improvements
+
+### 📚 Documentation
+- README improvements
+- Code documentation
+- API documentation
+- Usage examples
+- Tutorials and guides
+
+## 🛠️ Development Guidelines
+
+### Code Style
+
+We use `ruff` for code formatting and linting. The configuration is in `pyproject.toml`.
+
+```bash
+# Check code style
+uv run ruff check src tests
+
+# Format code
+uv run ruff format src tests
+
+# Run pre-commit hooks manually
+uv run pre-commit run --all-files
+```
+
+### Coding Standards
+
+- **Follow PEP 8** naming conventions:
+  - `snake_case` for functions and variables
+  - `PascalCase` for classes
+  - `UPPER_CASE` for constants
+
+- **Use type hints** for all function parameters and returns
+- **Maximum line length**: 99 characters
+- **Use absolute imports** over relative imports
+- **Document all public functions and classes** with Google-style docstrings
+
+### Pydantic Models
+
+All data models must use Pydantic for validation and serialization:
+
+```python
+from pydantic import BaseModel, Field
+from typing import Optional
+
+class ExampleModel(BaseModel):
+    """Example model with proper documentation.
+
+    Attributes:
+        name: The name field with validation
+        count: Optional count with default value
+    """
+
+    name: str = Field(..., description="Name of the item")
+    count: Optional[int] = Field(default=0, description="Count of items")
+```
+
+### GitHub API Integration
+
+When working with GitHub API code:
+
+- **Always handle rate limits** gracefully with automatic waiting
+- **Use proper authentication** headers for all requests
+- **Implement robust error handling** for API failures
+- **Log API interactions** for debugging purposes
+- **Mock API calls in tests** to avoid rate limiting during testing
+
+## 🧪 Testing
+
+We use `pytest` for testing with high coverage requirements.
+
+### Running Tests
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run tests with coverage report
+uv run pytest --cov=src --cov-report=html
+
+# Run specific test file
+uv run pytest tests/test_github.py
+
+# Run tests in parallel
+uv run pytest -n auto
+```
+
+### Writing Tests
+
+- Place tests in the `tests/` directory
+- Mock external API calls (especially GitHub API)
+- Test edge cases (empty repos, no merged PRs, API failures)
+- Validate data model serialization/deserialization
+- Aim for **80%+ code coverage**
+
+Example test structure:
+
+```python
+import pytest
+from unittest.mock import Mock, patch
+from src.datamodule.github import GitHubPRExtractor
+
+class TestGitHubPRExtractor:
+    """Test cases for GitHubPRExtractor class."""
+
+    def test_get_rate_limit_success(self):
+        """Test successful rate limit retrieval."""
+        # Test implementation here
+        pass
+
+    @patch('httpx.Client')
+    def test_get_merged_prs_with_pagination(self, mock_client):
+        """Test PR extraction with pagination."""
+        # Test implementation here
+        pass
+```
+
+### Test Categories
+
+We use pytest markers to categorize tests:
+
+- `@pytest.mark.slow` - For tests that take longer to run
+- `@pytest.mark.skip_when_ci` - For tests that should be skipped in CI/CD
+
+## 📝 Documentation
+
+### Docstring Style
+
+Use Google-style docstrings for all public functions and classes:
+
+```python
+def extract_pr_data(self, pr_info: PullRequest) -> TrainingData | None:
+    """Extract training data from a single pull request.
+
+    Args:
+        pr_info: The pull request information to process
+
+    Returns:
+        TrainingData object if successful, None if extraction fails
+
+    Raises:
+        APIError: If GitHub API requests fail
+        ValidationError: If data validation fails
+    """
+```
+
+### README Updates
+
+When adding new features:
+- Update relevant README sections
+- Add usage examples
+- Update the feature list
+- Include configuration options if applicable
+
+## 🔄 Pull Request Process
+
+### Before Submitting
+
+Ensure your PR meets these requirements:
+
+- [ ] **Title is self-explanatory** and describes the change
+- [ ] **Description explains the motivation** and context
+- [ ] **PR does only one thing** (no bundling of unrelated changes)
+- [ ] **All tests pass** locally with `uv run pytest`
+- [ ] **Pre-commit hooks pass** with `uv run pre-commit run -a`
+- [ ] **Code coverage** doesn't decrease significantly
+- [ ] **Documentation is updated** if needed
+
+### PR Checklist
+
+Use our [PR template](.github/PULL_REQUEST_TEMPLATE.md) which includes:
+
+- Summary of changes
+- Issue reference (if applicable)
+- Breaking changes (if any)
+- Testing checklist
+- Pre-submission checklist
+
+### Review Process
+
+1. **Automated checks** will run (tests, linting, coverage)
+2. **Maintainer review** - we'll provide feedback and suggestions
+3. **Address feedback** - make requested changes
+4. **Final approval** and merge
+
+## 🌟 Types of Changes
+
+### Major Changes
+- New core features
+- Breaking API changes
+- Architecture modifications
+
+Please discuss major changes in an issue before implementing.
+
+### Minor Changes
+- Bug fixes
+- Documentation improvements
+- Performance optimizations
+- Test improvements
+
+### Patch Changes
+- Typo fixes
+- Code style improvements
+- Minor refactoring
+
+## 🤝 Community Guidelines
+
+### Code of Conduct
+
+- Be respectful and inclusive
+- Focus on constructive feedback
+- Help others learn and grow
+- Celebrate diversity of thought and experience
+
+### Communication
+
+- **Issues**: For bug reports and feature requests
+- **Discussions**: For questions and general discussion
+- **Pull Requests**: For code contributions
+
+### Getting Help
+
+If you need help:
+
+1. Check existing [issues](https://github.com/Mai0313/swe_bench_v2/issues)
+2. Read the [documentation](https://mai0313.github.io/swe_bench_v2/)
+3. Create a new issue with the question label
+
+## 🏆 Recognition
+
+Contributors are recognized in several ways:
+
+- Listed in the GitHub contributors section
+- Mentioned in release notes for significant contributions
+- Added to the README contributors section (via contrib.rocks)
+
+## 🔗 Useful Links
+
+- [Project README](README.md)
+- [API Documentation](https://mai0313.github.io/swe_bench_v2/)
+- [Issues](https://github.com/Mai0313/swe_bench_v2/issues)
+- [Pull Requests](https://github.com/Mai0313/swe_bench_v2/pulls)
+- [Discussions](https://github.com/Mai0313/swe_bench_v2/discussions)
+
+## 📄 License
+
+By contributing to SWEBenchV2, you agree that your contributions will be licensed under the MIT License.
+
+---
+
+Thank you for contributing to SWEBenchV2! Your efforts help make this project better for everyone in the AI and software development community. 🚀

@@ -1,6 +1,4 @@
-<center>
-
-# Python 專案模板
+# SWEBenchV2
 
 [![python](https://img.shields.io/badge/-Python_3.10_%7C_3.11_%7C_3.12-blue?logo=python&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![uv](https://img.shields.io/badge/-uv_dependency_management-2C5F2D?logo=python&logoColor=white)](https://docs.astral.sh/uv/)
@@ -12,173 +10,254 @@
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Mai0313/swe_bench_v2/pulls)
 [![contributors](https://img.shields.io/github/contributors/Mai0313/swe_bench_v2.svg)](https://github.com/Mai0313/swe_bench_v2/graphs/contributors)
 
-</center>
-
-🚀 **一個完整的 Python 專案模板，幫助開發者快速啟動專案，內含完整的 CI/CD 流水線和現代化工具**
-
-點擊 [<kbd>使用此模板</kbd>](https://github.com/Mai0313/swe_bench_v2/generate) 來建立新的儲存庫，或使用我們的初始化腳本進行個人化設定。
+**一個創新的 SWE-Bench 替代方案，專注於測量 AI 模型與真實開發者編程模式的相似度，而非簡單的對錯判斷。**
 
 **其他語言版本**: [English](README.md) | [中文](README_cn.md)
 
-## ✨ 功能特色
+## 🚀 概述
 
-### 🏗️ **現代化專案結構**
+傳統的基準測試如 SWE-Bench 專注於測試模型是否能正確解決預定義問題。SWEBenchV2 採用了不同的方法：它測量 AI 模型的編程風格和決策與已經審核和批准代碼變更的經驗開發者的相似程度。
 
-- **src/ 佈局**: 遵循 Python 封裝最佳實踐
-- **uv 依賴管理**: 快速、可靠的現代化依賴解析
-- **多版本支援**: Python 3.10、3.11 和 3.12
-- **型別提示**: 完整的型別註解支援與驗證
+### 核心理念
 
-### 🔧 **開發環境**
+我們不問「模型得到了正確答案嗎？」，而是問「模型的方法與有經驗的開發者實際做法有多相似？」
 
-- **VS Code Dev Container**: 完整配置，包含 zsh、oh-my-zsh 和 powerlevel10k 主題
-- **Docker 支援**: 開發和生產環境的多階段 Dockerfile
-- **Pre-commit hooks**: 使用 ruff 自動化程式碼格式化和檢查
-- **本地開發**: 使用 Make 命令輕鬆設定
+這種方法假設已合併的拉取請求代表了有經驗開發者對於「正確」實現變更方式的共識。通過將模型輸出與這些真實世界的解決方案進行比較，我們不僅可以評估正確性，還可以評估編程風格、問題解決方法和對專案慣例的遵循。
 
-### 🧪 **測試與品質保證**
+## 🎯 主要功能
 
-- **pytest 框架**: 全面的測試與覆蓋率報告
-- **平行執行**: 使用 pytest-xdist 加速測試執行
-- **程式碼覆蓋率**: HTML 和 XML 報告，可配置閾值
-- **品質門檻**: 每次提交都自動進行程式碼品質檢查
+- **🔍 真實世界數據**：從實際已合併的拉取請求中提取訓練數據
+- **� 模式匹配**：專注於與開發者模式的相似性，而非簡單的對錯判斷
+- **📋 全面分析**：捕獲修改前後的代碼狀態、PR 上下文和元數據
+- **🔗 GitHub 整合**：無縫連接任何 GitHub 儲存庫
+- **⚡ 速率限制處理**：內建 GitHub API 速率限制管理
+- **⚙️ 靈活配置**：針對不同使用情況的可配置提取參數
 
-### 🚀 **完整 CI/CD 流水線**
+## 📊 工作原理
 
-- **多版本測試**: 跨 Python 版本的自動化測試
-- **程式碼品質檢查**: ruff 檢查和格式化驗證
-- **文檔部署**: 自動 GitHub Pages 部署
-- **發布自動化**: 語義化版本控制和發布草稿
-- **自動標籤**: 智能 PR 分類
+1. **數據提取**：掃描 GitHub 儲存庫中已合併的拉取請求
+2. **內容捕獲**：記錄所有修改文件的修改前後狀態
+3. **上下文保存**：維護 PR 標題、描述和元數據
+4. **數據集生成**：創建適用於 LLM 評估的結構化訓練數據
+5. **基準創建**：提供問題-上下文-答案三元組用於模型測試
 
-### 📚 **文檔系統**
+### 數據結構
 
-- **MkDocs Material**: 美觀且響應式的文檔
-- **自動生成**: 從程式碼和筆記本自動生成文檔的腳本
-- **API 文檔**: 自動 API 參考生成
-- **部落格支援**: 內建專案更新部落格功能
+每個提取的 PR 都成為一個基準項目，包含：
 
-### 🤖 **自動化腳本**
+- **問題**：PR 標題和描述（需要解決的問題）
+- **上下文**：修改文件的修改前狀態和文件名
+- **期望答案**：修改文件的修改後狀態（「正確」的解決方案）
 
-- **專案初始化**: `scripts/initpyrepo.go` 用於建立個人化專案
-- **文檔生成**: `scripts/gen_docs.py` 用於自動生成文檔
-- **Makefile 命令**: 常見開發任務自動化
+## 🛠️ 安裝
 
-## 🚀 快速開始
+### 先決條件
 
-### 選項 1: 使用 GitHub 模板
+- Python 3.10 或更高版本
+- [uv](https://github.com/astral-sh/uv) 用於依賴管理
+- GitHub API 令牌（用於訪問儲存庫）
 
-1. 點擊 [<kbd>使用此模板</kbd>](https://github.com/Mai0313/swe_bench_v2/generate)
-2. 配置您的新儲存庫
-3. 複製並開始開發
+### 設置
 
-### 選項 2: 使用初始化腳本
+1. **克隆儲存庫：**
 
-1. 複製此儲存庫
-2. 執行初始化腳本：
-    ```bash
-    go run scripts/initpyrepo.go
-    ```
-3. 依照提示自訂您的專案
+```bash
+git clone https://github.com/Mai0313/swe_bench_v2.git
+cd swe_bench_v2
+```
 
-### 選項 3: 手動設定
+1. **安裝依賴：**
 
-1. 複製儲存庫
-2. 安裝依賴：
-    ```bash
-    make uv-install  # 如果尚未安裝 uv
-    uv sync          # 安裝專案依賴
-    ```
-3. 設定 pre-commit hooks：
-    ```bash
-    make format      # 執行 pre-commit hooks
-    ```
+```bash
+uv sync
+```
 
-### 選項 4: 快速自訂（推薦）
+1. **設置您的 GitHub 令牌：**
 
-1. 複製此儲存庫
-2. 全局替換 `swe_bench_v2` 為您的專案名稱（snake_case 格式）
-3. 全局替換 `SWEBenchV2` 為您的專案標題（PascalCase 格式）
-4. 執行初始設定：
-    ```bash
-    make uv-install && uv sync && make format
-    ```
+```bash
+export GITHUB_TOKEN="your_github_token_here"
+```
 
-## 📁 專案結構
+## � 使用方法
+
+### 基本使用
+
+```python
+from src.datamodule.github import GitHubPRExtractor
+
+# 初始化提取器
+extractor = GitHubPRExtractor(
+    repo_owner="owner_name",
+    repo_name="repository_name",
+    max_page=10,  # 限制提取頁面數
+    per_page=50,  # 每頁 PR 數量
+)
+
+# 提取所有 PR 數據
+result = extractor.extract_all_pr_data(save_json=True)
+print(f"從 {result.repository} 提取了 {result.total_prs} 個 PR")
+```
+
+### 命令行使用
+
+```bash
+# 使用默認配置運行
+uv run python main.py
+
+# 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
+```
+
+### 高級配置
+
+```python
+extractor = GitHubPRExtractor(
+    repo_owner="your_org",
+    repo_name="your_repo",
+    max_page=5,  # 限制為前 5 頁
+    per_page=100,  # 每頁 100 個 PR
+    token="your_token",  # 可選：直接設置令牌
+)
+
+# 提取前檢查速率限制
+rate_limit = extractor.get_rate_limit()
+print(f"剩餘請求數：{rate_limit.rate.remaining}")
+
+# 為特定 PR 提取數據
+merged_prs = extractor.get_merged_prs()
+for pr in merged_prs[:5]:  # 處理前 5 個 PR
+    pr_data = extractor.extract_pr_data(pr)
+    print(f"已為 PR #{pr.number} 提取數據：{pr.title}")
+```
+
+## 📁 輸出格式
+
+提取的數據以 JSON 格式保存，結構如下：
+
+```json
+{
+  "repository": "owner/repo",
+  "extracted_at": "2024-01-01T12:00:00",
+  "total_prs": 100,
+  "prs": [
+    {
+      "pr_info": {
+        "number": 123,
+        "title": "Fix bug in authentication",
+        "body": "This PR fixes the authentication issue...",
+        "merged_at": "2024-01-01T10:00:00Z"
+      },
+      "question": "PR #123: Fix bug in authentication\nDescription:\nThis PR fixes...",
+      "files": [
+        {
+          "filename": "src/auth.py",
+          "status": "modified",
+          "before_content": "# Original code...",
+          "after_content": "# Modified code...",
+          "additions": 5,
+          "deletions": 2
+        }
+      ]
+    }
+  ]
+}
+```
+
+## � 配置
+
+### 環境變量
+
+| 變量                  | 描述                  | 默認值                   |
+| --------------------- | --------------------- | ------------------------ |
+| `GITHUB_TOKEN`        | GitHub API 令牌       | 無（私有儲存庫需要）     |
+| `GITHUB_API_BASE_URL` | 自定義 GitHub API URL | `https://api.github.com` |
+
+### 速率限制
+
+工具自動處理 GitHub API 速率限制：
+
+- 🔍 監控剩餘請求數
+- ⏳ 達到限制時自動等待
+- 📝 提供關於速率限制狀態的詳細日誌
+
+## 🤖 與 LLM 一起使用
+
+提取的數據設計為與語言模型無縫配合：
+
+```python
+# 示例：使用提取的數據測試模型
+for pr_data in result.prs:
+    question = pr_data.question
+    context = {"files": {file.filename: file.before_content for file in pr_data.files}}
+    expected_answer = {file.filename: file.after_content for file in pr_data.files}
+
+    # 發送給您的 LLM 並比較相似度
+    model_response = your_llm.generate(question, context)
+    similarity_score = calculate_similarity(model_response, expected_answer)
+```
+
+## 🗂️ 項目結構
 
 ```
-├── .devcontainer/          # VS Code Dev Container 配置
-├── .github/
-│   ├── workflows/          # CI/CD 工作流程
-│   └── copilot-instructions.md
-├── docker/                 # Docker 配置
-├── docs/                   # MkDocs 文檔
-├── scripts/                # 自動化腳本
 ├── src/
-│   └── swe_bench_v2/      # 主要套件
-├── tests/                  # 測試套件
-├── pyproject.toml          # 專案配置
-├── Makefile               # 開發命令
-└── README.md
+│   ├── datamodule/
+│   │   └── github.py          # 主要提取邏輯
+│   └── types/
+│       ├── models.py          # 數據模型
+│       ├── prs.py            # 拉取請求類型
+│       └── limit.py          # 速率限制處理
+├── tests/                     # 全面測試套件
+├── data/                      # 提取數據的輸出目錄
+├── main.py                   # 示例使用腳本
+├── pyproject.toml            # 項目配置
+└── README.md                 # 此文件
 ```
 
-## 🛠️ 可用命令
+## 🔬 評估方法
 
-```bash
-# 開發
-make clean          # 清理自動生成的檔案
-make format         # 執行 pre-commit hooks
-make test           # 執行所有測試
-make gen-docs       # 生成文檔
+與專注於二元正確性的傳統基準不同，SWEBenchV2 評估：
 
-# 依賴管理
-make uv-install     # 安裝 uv 依賴管理器
-uv add <package>    # 添加生產依賴
-uv add <package> --dev  # 添加開發依賴
-```
+1. **代碼相似性**：生成的代碼與批准的解決方案有多相似？
+2. **風格一致性**：模型是否遵循項目的編程約定？
+3. **問題解決方法**：模型是否像經驗豐富的開發者一樣處理問題？
+4. **上下文意識**：模型是否適當考慮了現有代碼庫模式？
 
-## 🎯 包含內容
+## 🤝 貢獻
 
-### CI/CD 工作流程
+歡迎貢獻！您可以通過以下方式幫助：
 
-- **測試**: PR 上的多版本 Python 測試
-- **程式碼品質**: 自動化 ruff 檢查和 pre-commit 驗證
-- **文檔**: 自動 GitHub Pages 部署
-- **發布**: 自動發布草稿和變更日誌生成
-- **標籤**: 基於 PR 內容的自動標籤
+1. **分叉儲存庫**
+2. **創建功能分支**：`git checkout -b feature-name`
+3. **進行更改並添加測試**
+4. **提交拉取請求**
 
-### 開發工具
+更多詳情請參閱我們的[貢獻指南](CONTRIBUTING)。
 
-- **ruff**: 快速 Python 檢查器和格式化器
-- **pytest**: 帶覆蓋率的測試框架
-- **pre-commit**: 程式碼品質的 Git hooks
-- **MkDocs**: 文檔生成
-- **Docker**: 容器化開發和部署
+## 📊 使用案例
 
-### 專案模板
+- **模型評估**：評估 AI 模型與真實開發者模式的匹配程度
+- **訓練數據生成**：從真實儲存庫創建現實的編程數據集
+- **代碼風格分析**：研究不同項目的編程模式
+- **開發者行為研究**：分析有經驗的開發者如何解決問題
 
-- **Python 套件**: 即用型套件結構
-- **配置檔案**: 包含所有必要的配置檔案
-- **文檔**: 完整的文檔設定
-- **測試**: 全面的測試配置
+## 🙏 致謝
 
-## 🎨 自訂指南
+- 靈感來自原始的 [SWE-Bench](https://www.swebench.com/) 項目
+- 基於真實開發者共識代表質量標準的原則
+- 為 AI 輔助軟件開發時代而設計
 
-### 專案名稱自訂
+## 📄 許可證
 
-本模板設計為可透過簡單的全局替換快速自訂：
+本項目根據 MIT 許可證授權 - 詳情請參閱 [LICENSE](LICENSE) 文件。
 
-1. **替換套件名稱**: 將所有 `swe_bench_v2` 替換為您的專案名稱（建議使用 snake_case）
-2. **替換專案標題**: 將所有 `SWEBenchV2` 替換為您的專案標題（建議使用 PascalCase）
-3. **更新中繼資料**: 修改 `pyproject.toml` 中的作者、描述等資訊
+---
 
-範例：
+<div align="center">
 
-```bash
-# 如果您的專案叫做 "awesome_project"
-find . -type f -name "*.py" -o -name "*.md" -o -name "*.toml" | xargs sed -i 's/swe_bench_v2/awesome_project/g'
-find . -type f -name "*.py" -o -name "*.md" -o -name "*.toml" | xargs sed -i 's/SWEBenchV2/AwesomeProject/g'
-```
+**為 AI 和軟件開發社區用 ❤️ 製作**
+
+[報告錯誤](https://github.com/Mai0313/swe_bench_v2/issues) • [請求功能](https://github.com/Mai0313/swe_bench_v2/issues) • [文檔](https://mai0313.github.io/swe_bench_v2/)
+
+</div>
 
 ## 🤝 貢獻
 

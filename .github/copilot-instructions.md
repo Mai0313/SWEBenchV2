@@ -4,133 +4,206 @@
 
 # Project Background
 
-<!-- This section provides context about the project, its purpose, and any relevant background information -->
+SWEBenchV2 is an innovative alternative to SWE-Bench that focuses on measuring how closely AI models match real developer coding patterns rather than binary correctness. Instead of asking "Did the model get the right answer?", we ask "How closely does the model's approach match what experienced developers actually do?"
 
-<!-- Example -->
-
-<!-- This is a comprehensive Python project template designed to help developers quickly bootstrap new projects with complete CI/CD pipelines, modern tooling, and best practices. The template includes everything needed to start a professional Python project without spending time on infrastructure setup. -->
+The project extracts training data from actual merged pull requests from GitHub repositories, creating benchmark datasets that capture not just correctness but also coding style, problem-solving approach, and adherence to project conventions.
 
 # Project Structure / Features
 
-<!-- This section outlines the key features and structure of the project, including directories, files, and their purposes -->
+## Core Data Extraction System
 
-<!-- Example -->
+### GitHubPRExtractor (`src/datamodule/github.py`)
 
-<!-- ## Core Infrastructure
+The main extraction engine that handles:
 
-- **Modern Python**: Supports Python 3.10, 3.11, and 3.12
-- **Dependency Management**: Uses `uv` for fast and reliable dependency management
-- **Project Structure**: src/ layout following Python packaging best practices
-- **Docker Support**: Multi-stage Dockerfile for development and production
-- **VS Code Dev Container**: Fully configured development environment with zsh, oh-my-zsh, and powerlevel10k
+- **GitHub API Integration**: Connects to GitHub repositories using authenticated API requests
+- **PR Discovery**: Finds and filters merged pull requests using pagination and state filtering
+- **Rate Limit Management**: Automatically handles GitHub API rate limits with intelligent waiting
+- **Content Extraction**: Retrieves before/after file contents for each modified file in PRs
+- **Data Structuring**: Converts raw GitHub data into structured training datasets
 
-## Code Quality & Testing
+Key Methods:
 
-- **Pre-commit Hooks**: Automated code formatting and linting with ruff
-- **Testing Framework**: pytest with coverage reporting, parallel execution, and detailed reporting
-- **Code Coverage**: Comprehensive coverage tracking with HTML and XML reports
-- **Type Checking**: Full type hint support and validation
+- `get_rate_limit()`: Checks current GitHub API rate limit status
+- `get_merged_prs()`: Retrieves all merged PRs from a repository with pagination
+- `get_pr_files()`: Gets list of files modified in a specific PR
+- `get_file_content()`: Fetches file content at a specific SHA/commit
+- `extract_pr_data()`: Processes a single PR into training data format
+- `extract_all_pr_data()`: Orchestrates full repository extraction
 
-## CI/CD Pipeline
+## Data Models (`src/types/`)
 
-- **Automated Testing**: Multi-version Python testing on pull requests
-- **Code Quality Checks**: Automated ruff checks and pre-commit validation
-- **Documentation Deployment**: Automatic GitHub Pages deployment for MkDocs
-- **Release Management**: Automated release drafting and semantic versioning
-- **Auto-labeling**: Intelligent PR labeling based on changes
+### PullRequest Model (`prs.py`)
 
-## Documentation
+Comprehensive Pydantic model representing GitHub PR data including:
 
-- **MkDocs**: Material theme with automatic API documentation generation
-- **Auto-generated Docs**: Scripts to generate documentation from Python code and Jupyter notebooks
-- **Blog Support**: Built-in blog functionality for project updates
+- Basic PR info (number, title, body, state)
+- User information and associations
+- Merge details and timestamps
+- Base and head branch information
+- Repository metadata
 
-## Automation Scripts
+### FileData Model (`models.py`)
 
-- **Project Initialization**: Go script (`scripts/initpyrepo.go`) for creating new projects from template
-- **Documentation Generation**: Python script (`scripts/gen_docs.py`) for auto-generating docs from code
+Represents changes to individual files:
 
-## Project Usage
+- File metadata (path, SHA, status)
+- Change statistics (additions, deletions, total changes)
+- Content states (before_content, after_content)
+- Git patch information
 
-This template is designed to be cloned and customized for new Python projects. Developers can use the initialization script to create new projects with personalized configurations while maintaining all the CI/CD and tooling benefits.
+### TrainingData Model (`models.py`)
 
-## Template Customization Strategy
+Final structured format for LLM training:
 
-When users clone this project, they can quickly customize it by performing global replacements:
+- PR context (full PR information)
+- Formatted question (PR title + description)
+- Complete file change data
+- Ready for AI model consumption
 
-- **Replace `swe_bench_v2`** → Replace with their actual project name (snake_case format)
-- **Replace `SWEBenchV2`** → Replace with their project title (PascalCase format)
+### ExtractionResult Model (`models.py`)
 
-This allows users to instantly personalize the entire project structure, package names, imports, and documentation while keeping all the CI/CD infrastructure intact. -->
+Container for full extraction results:
+
+- Repository metadata
+- Extraction timestamp
+- Complete dataset of all processed PRs
+- Built-in JSON export functionality
+
+### Rate Limit Handling (`limit.py`)
+
+Manages GitHub API quotas:
+
+- Tracks remaining requests
+- Monitors reset timestamps
+- Provides structured rate limit information
+
+## Configuration System
+
+### Environment Variables
+
+- `GITHUB_TOKEN`: GitHub API authentication token
+- `GITHUB_API_BASE_URL`: Custom GitHub API endpoint (default: api.github.com)
+
+### Extraction Parameters
+
+- `repo_owner`: Target repository owner/organization
+- `repo_name`: Target repository name
+- `max_page`: Limit pagination depth
+- `per_page`: Results per API request page
+
+## Data Flow Architecture
+
+1. **Input**: Repository specification (owner/repo)
+2. **Discovery**: Find all merged PRs using GitHub API
+3. **Analysis**: For each PR, extract file changes and content
+4. **Processing**: Convert to structured training format
+5. **Output**: JSON dataset ready for LLM evaluation
+
+## Output Format
+
+The system generates structured JSON containing:
+
+- Repository metadata
+- Extraction timestamps
+- Array of training examples, each with:
+    - Question: PR title and description
+    - Context: Before-state of modified files
+    - Expected Answer: After-state of modified files
+    - Metadata: PR details, file statistics, etc.
+
+## Evaluation Philosophy
+
+Unlike traditional benchmarks that focus on binary correctness, SWEBenchV2 enables evaluation of:
+
+- **Code Similarity**: How similar is generated code to approved solutions?
+- **Style Consistency**: Does the model follow project coding conventions?
+- **Problem-solving Approach**: Does the model tackle problems like experienced developers?
+- **Contextual Awareness**: Does the model consider existing codebase patterns?
 
 # Rule Sheet
 
-<!-- This section outlines the coding standards, practices, and guidelines to follow when contributing to this project. It ensures consistency, maintainability, and quality across the codebase. -->
+## Coding Style
 
-<!-- Example -->
-
-<!-- ## Coding Style
-
-- Follow `ruff-check` and `ruff-format` for code style and formatting using `pre-commit` hooks.
+- Follow `ruff-check` and `ruff-format` for code style and formatting using `pre-commit` hooks
 - Follow PEP 8 naming conventions:
     - snake_case for functions and variables
     - PascalCase for classes
     - UPPER_CASE for constants
-- Follow the Python version specified in the `pyproject.toml` or `.python-version` file.
-- Use pydantic model, and all pydantic models should include `Field`, and `description` should be included.
+- Use type hints for all function parameters and returns
 - Maximum line length of 99 characters
 - Use absolute imports over relative imports
-- Use `pytest` for testing, and all tests should be placed in the `tests/` directory
+
+## Pydantic Models
+
+- All data models must use Pydantic for validation and serialization
+- Include descriptive `Field` declarations with proper descriptions
+- Use appropriate type annotations with Union types where needed
+- Implement model validation for complex business logic
 
 ### Example
 
 ```python
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
-class User(BaseModel):
-    """Example User model.
+class GitHubFile(BaseModel):
+    """Represents a file change in a GitHub PR.
 
     Attributes:
-        name (str): The name of the user
+        filename: Path to the modified file
+        status: Type of change (added, modified, removed)
+        before_content: File content before changes
+        after_content: File content after changes
     """
 
-    name: str = Field(..., description="The name of the user")
-
-
-def foo(self, extra_input: str) -> str:
-    """Example function.
-
-    Args:
-        extra_input (str): Extra input for the function
-
-    Returns:
-        str: Result of the function
-    """
-    return f"Hello, {self.name} and {extra_input}"
+    filename: str = Field(..., description="File path and name")
+    status: str = Field(..., description="File status (added, modified, removed)")
+    before_content: str = Field(default="", description="File content before changes")
+    after_content: str = Field(default="", description="File content after changes")
 ```
 
-## Type Hints
+## GitHub API Integration
 
-- Use type hints for all function parameters and returns
-- Use `TypeVar` for generic types
-- Use `Protocol` for duck typing
+- Always handle rate limits gracefully with automatic waiting
+- Use proper authentication headers for all requests
+- Implement robust error handling for API failures
+- Log all API interactions for debugging
+- Cache API responses when appropriate to reduce requests
+
+## Data Processing
+
+- Validate all input data using Pydantic models
+- Handle edge cases (deleted files, binary files, large files)
+- Preserve all relevant metadata for downstream analysis
+- Ensure data consistency across the entire extraction pipeline
+
+## Error Handling
+
+- Use structured logging with logfire for all operations
+- Implement graceful degradation for API failures
+- Provide clear error messages for configuration issues
+- Handle network timeouts and connection errors
+
+## Testing
+
+- Use `pytest` for all testing, place tests in `tests/` directory
+- Mock GitHub API calls in tests to avoid rate limiting
+- Test edge cases (empty repos, no merged PRs, API failures)
+- Validate data model serialization/deserialization
 
 ## Documentation
 
-- Use Google-style docstrings
-- All documentation should be in English
-- Use proper inline comments for better mkdocs support
-- Document environment setup
+- Use Google-style docstrings for all functions and classes
+- Document all configuration options and environment variables
+- Provide clear examples for common use cases
+- Keep README files updated with current functionality
 
 ## Dependencies
 
 - Use `uv` for dependency management
-- Separate dev dependencies by adding `--dev` flag when adding dependencies
-    - Production:
-        - Add Dependencies: `uv add <package>`
-        - Remove Dependencies: `uv remove <package>`
-    - Development:
-        - Add Dependencies: `uv add <package> --dev`
-        - Remove Dependencies: `uv remove <package> --dev`
-- Regularly update dependencies -->
+- Production dependencies: `uv add <package>`
+- Development dependencies: `uv add <package> --dev`
+- Pin versions for reproducible builds
+- Regularly update dependencies for security
