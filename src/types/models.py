@@ -38,6 +38,7 @@ class ExtractionResult(BaseModel):
     )
 
     def save(self, output_filename: str | Path) -> str | Path:
+        json_dict = self.model_dump(mode="json", exclude_none=True, exclude_unset=True)
         with open(output_filename, "w", encoding="utf-8") as f:
-            json.dump(self.model_dump(), f, ensure_ascii=False, indent=2)
+            json.dump(json_dict, f, ensure_ascii=False, indent=2)
         return output_filename
