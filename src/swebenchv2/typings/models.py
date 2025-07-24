@@ -6,6 +6,7 @@ from datetime import datetime
 from pydantic import Field, BaseModel
 
 from swebenchv2.typings.prs import PullRequest
+from swebenchv2.typings.gitea_prs import GiteaPullRequest
 
 
 class FileData(BaseModel):
@@ -24,7 +25,7 @@ class FileData(BaseModel):
 
 
 class TrainingData(BaseModel):
-    pr_info: PullRequest = Field(..., description="Pull request information", exclude=True)
+    pr_info: PullRequest | GiteaPullRequest = Field(..., description="Pull request information", exclude=True)
     question: str = Field(..., description="Formatted question based on PR title and description")
     files: list[FileData] = Field(default=[], description="List of modified files")
 
