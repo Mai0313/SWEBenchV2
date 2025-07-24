@@ -7,7 +7,7 @@ from swebenchv2.datamodule.github import (
 
 
 class SWEBench(GitHubAPISettings):
-    def main(self) -> ExtractionResult:
+    def extract(self) -> ExtractionResult:
         """Extract pull request data synchronously from GitHub repository.
 
         Creates a synchronous GitHub PR extractor and processes all merged pull requests
@@ -22,7 +22,7 @@ class SWEBench(GitHubAPISettings):
         result = extractor.extract_all_pr_data(save_json=True)
         return result
 
-    async def a_main(self) -> ExtractionResult:
+    async def a_extract(self) -> ExtractionResult:
         """Extract pull request data asynchronously from GitHub repository.
 
         Creates an asynchronous GitHub PR extractor and processes all merged pull requests
@@ -43,7 +43,7 @@ class SWEBench(GitHubAPISettings):
         Callable interface that runs the asynchronous PR extraction workflow.
         This method is invoked when the SWEBench instance is called directly.
         """
-        await self.a_main()
+        await self.a_extract()
 
 
 def main() -> None:
