@@ -1,8 +1,11 @@
 from swebenchv2.datamodule.github import GitHubPRExtractorBase
 
+short_url = "Mai0313/repo_template"
+full_url = "https://github.com/Mai0313/repo_template"
+
 
 def test_repo_owner_and_name():
-    http_url = GitHubPRExtractorBase(repo_url="https://github.com/Mai0313/SWEBenchV2")
-    repo_name = GitHubPRExtractorBase(repo_url="Mai0313/SWEBenchV2")
-    assert http_url.repo_owner == repo_name.repo_owner == "Mai0313"
-    assert http_url.repo_name == repo_name.repo_name == "SWEBenchV2"
+    short = GitHubPRExtractorBase(repo_url=short_url)
+    full = GitHubPRExtractorBase(repo_url=full_url)
+    assert short.repo_owner == full.repo_owner == "Mai0313"
+    assert short.repo_name == full.repo_name == "repo_template"
