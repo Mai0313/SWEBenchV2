@@ -74,7 +74,7 @@ The project is structured around several key components:
 
 ### Key Design Decisions
 
-- **URL-based Configuration**: Simplified from separate owner/repo to unified URL
+- **URL-based Configuration**: Simplified from separate Mai0313/SWEBenchV2 to unified URL
 - **Field Naming**: Use `before_edit`/`after_edit` for clarity and consistency
 - **Async Support**: Dual implementation for different performance needs
 - **Type Safety**: Heavy use of Pydantic for data validation
@@ -169,8 +169,8 @@ When working with GitHub API code:
 ### Repository URL Handling
 
 The project now uses a unified `repo_url` parameter that accepts:
-- Full GitHub URLs: `https://github.com/owner/repo`
-- Short format: `owner/repo`
+- Full GitHub URLs: `https://github.com/Mai0313/SWEBenchV2`
+- Short format: `Mai0313/SWEBenchV2`
 
 The URL parsing is handled automatically by the `GitHubPRExtractorBase` class using computed fields.
 
@@ -184,7 +184,7 @@ import asyncio
 
 async def extract_data():
     extractor = AsyncGitHubPRExtractor(
-        repo_url="https://github.com/owner/repo"
+        repo_url="https://github.com/Mai0313/SWEBenchV2"
     )
     # Multi-level concurrency optimization:
     # 1. File-level: concurrent before/after content fetching with asyncio.gather()
@@ -237,8 +237,8 @@ The CLI testing suite comprehensively tests all execution methods and input form
 - `poe main --repo_url <url>` - Poethepoet task runner execution
 
 #### **Tested Repository URL Formats**:
-- Short format: `"Mai0313/repo_template"`
-- Full URL format: `"https://github.com/Mai0313/repo_template"`
+- Short format: `"Mai0313/SWEBenchV2"`
+- Full URL format: `"https://github.com/Mai0313/SWEBenchV2"`
 
 #### **Test Categories**:
 - **Mock Tests**: Function logic with mocked GitHub API to avoid rate limits
@@ -265,13 +265,13 @@ uv run python -m pytest tests/test_cli.py -v -m "not slow"
 
 ```bash
 # Test the CLI directly (multiple methods available)
-swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
 
 # Alternative execution methods:
-poe main --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
-python src/swebenchv2/cli.py --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
-uv run cli --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
-uv run swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=1 --per_page=5
+poe main --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
+python src/swebenchv2/cli.py --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
+uv run cli --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
+uv run swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
 
 # Test both sync and async implementations
 uv run pytest tests/test_github.py tests/test_async_github.py
@@ -308,7 +308,7 @@ class TestGitHubPRExtractor:
     def test_get_rate_limit_success(self):
         """Test successful rate limit retrieval."""
         extractor = GitHubPRExtractor(
-            repo_url="https://github.com/owner/repo"
+            repo_url="https://github.com/Mai0313/SWEBenchV2"
         )
         # Test implementation here
         pass
@@ -317,7 +317,7 @@ class TestGitHubPRExtractor:
     def test_get_merged_prs_with_pagination(self, mock_client):
         """Test PR extraction with pagination."""
         extractor = GitHubPRExtractor(
-            repo_url="https://github.com/owner/repo",
+            repo_url="https://github.com/Mai0313/SWEBenchV2",
             max_page=2,
             per_page=10
         )
@@ -331,7 +331,7 @@ class TestAsyncGitHubPRExtractor:
     async def test_async_extraction(self):
         """Test asynchronous data extraction."""
         extractor = AsyncGitHubPRExtractor(
-            repo_url="https://github.com/owner/repo"
+            repo_url="https://github.com/Mai0313/SWEBenchV2"
         )
         # Async test implementation here
         pass
@@ -352,13 +352,13 @@ When adding new functionality, ensure both synchronous and asynchronous versions
 ```python
 # Sync test
 def test_extract_pr_data_sync():
-    extractor = GitHubPRExtractor(repo_url="https://github.com/owner/repo")
+    extractor = GitHubPRExtractor(repo_url="https://github.com/Mai0313/SWEBenchV2")
     # Test implementation
 
 # Async test with concurrency validation
 @pytest.mark.asyncio
 async def test_extract_pr_data_async():
-    extractor = AsyncGitHubPRExtractor(repo_url="https://github.com/owner/repo")
+    extractor = AsyncGitHubPRExtractor(repo_url="https://github.com/Mai0313/SWEBenchV2")
     # Test async implementation and verify concurrent processing
     # Validate that asyncio.gather() is used for parallel operations
 
@@ -370,7 +370,7 @@ async def test_async_performance_improvement():
     pass
 ```
 async def test_extract_pr_data_async():
-    extractor = AsyncGitHubPRExtractor(repo_url="https://github.com/owner/repo")
+    extractor = AsyncGitHubPRExtractor(repo_url="https://github.com/Mai0313/SWEBenchV2")
     # Async test implementation
 ```
 
@@ -398,7 +398,7 @@ def extract_pr_data(self, pr_info: PullRequest) -> TrainingData:
         ValidationError: If data validation fails
 
     Example:
-        >>> extractor = GitHubPRExtractor(repo_url="https://github.com/owner/repo")
+        >>> extractor = GitHubPRExtractor(repo_url="https://github.com/Mai0313/SWEBenchV2")
         >>> pr_data = extractor.extract_pr_data(pr_info)
         >>> print(f"Files changed: {len(pr_data.files)}")
     """

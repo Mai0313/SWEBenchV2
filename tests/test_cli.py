@@ -13,8 +13,8 @@ import pytest
 
 from swebenchv2.cli import main, extract
 
-short_url = "Mai0313/repo_template"
-full_url = "https://github.com/Mai0313/repo_template"
+short_url = "Mai0313/SWEBenchV2"
+full_url = "https://github.com/Mai0313/SWEBenchV2"
 
 
 class TestCLIWithMockedExtraction:
@@ -26,7 +26,7 @@ class TestCLIWithMockedExtraction:
         """Test the extract function with different repo URL formats.
 
         This test verifies that the extract function correctly handles both
-        short format (owner/repo) and full GitHub URL format inputs.
+        short format (Mai0313/SWEBenchV2) and full GitHub URL format inputs.
 
         Args:
             mock_extractor_class: Mocked AsyncGitHubPRExtractor class.

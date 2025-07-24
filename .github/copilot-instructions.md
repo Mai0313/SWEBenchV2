@@ -18,7 +18,7 @@ The project extracts training data from actual merged pull requests from GitHub 
 
 The project provides a fully documented command-line interface for easy data extraction with multiple execution methods. All CLI functions now include comprehensive Google-style docstrings:
 
-- **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/owner/repo"`
+- **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"`
 - **Sync Mode**: `swebenchv2 main --repo_url="..."`
 - **Async Mode**: `swebenchv2 a_main --repo_url="..."` (recommended for large repositories)
 - **Poethepoet Task**: `poe main --repo_url="..."`
@@ -33,7 +33,7 @@ Installation for CLI usage:
 ```bash
 uv pip install -e .  # Install package in development mode
 export GITHUB_TOKEN="your_token_here"
-swebenchv2 --repo_url="https://github.com/owner/repo"
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 ```
 
 ### GitHubPRExtractor (`src/swebenchv2/datamodule/github.py`)
@@ -45,7 +45,7 @@ The main extraction engine with comprehensive documentation for all methods. Eve
 - **Rate Limit Management**: Automatically handles GitHub API rate limits with intelligent waiting
 - **Content Extraction**: Retrieves before/after file contents for each modified file in PRs
 - **Data Structuring**: Converts raw GitHub data into structured training datasets
-- **URL Parsing**: Accepts full GitHub URLs and automatically extracts owner/repository names
+- **URL Parsing**: Accepts full GitHub URLs and automatically extracts Mai0313/SWEBenchV2sitory names
 - **High-Performance Async**: Multi-level concurrent processing with `asyncio.gather()` optimizations
 
 Key Classes:
@@ -161,14 +161,14 @@ This enables running with `poe main --repo_url="..."` for development convenienc
 
 ### Extraction Parameters
 
-- `repo_url`: Target repository URL (e.g., `https://github.com/owner/repo` or `owner/repo`)
+- `repo_url`: Target repository URL (e.g., `https://github.com/Mai0313/SWEBenchV2` or `Mai0313/SWEBenchV2`)
 - `max_page`: Limit pagination depth
 - `per_page`: Results per API request page
 - `token`: Optional direct token specification (overrides environment variable)
 
 ## Data Flow Architecture
 
-1. **Input**: Repository specification (URL or owner/repo format)
+1. **Input**: Repository specification (URL or Mai0313/SWEBenchV2 format)
 2. **Discovery**: Find all merged PRs using GitHub API with intelligent pagination
 3. **Analysis**: For each PR, extract file changes and content using concurrent before/after SHA fetching
 4. **Processing**: Convert to structured training format with parallel file content retrieval
@@ -291,8 +291,8 @@ Comprehensive CLI testing covering all execution methods and input formats. The 
 
 #### **Repository URL Formats Tested**:
 
-- Short format: `"Mai0313/repo_template"`
-- Full URL format: `"https://github.com/Mai0313/repo_template"`
+- Short format: `"Mai0313/SWEBenchV2
+- Full URL format: `"https://github.com/Mai0313/SWEBenchV2
 
 #### **Test Categories**:
 
