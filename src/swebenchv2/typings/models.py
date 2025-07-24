@@ -9,14 +9,14 @@ from swebenchv2.typings.prs import PullRequest
 
 
 class FileData(BaseModel):
-    sha: str = Field(..., description="File SHA")
+    sha: str = Field(default="", description="File SHA")
     filename: str = Field(..., description="File path and name")
     status: str = Field(..., description="File status (added, modified, removed)")
     additions: int = Field(..., description="Number of lines added")
     deletions: int = Field(..., description="Number of lines deleted")
     changes: int = Field(..., description="Total number of changes")
-    blob_url: str | None = Field(default="", description="Blob URL for the file, it can be None if not available")
-    raw_url: str | None = Field(default="", description="Raw URL for the file content, it can be None if not available")
+    blob_url: str | None = Field(default="", description="Blob URL for the file")
+    raw_url: str | None = Field(default="", description="Raw URL for the file content")
     contents_url: str = Field(default="", description="Contents URL for the file")
     before_edit: str = Field(default="", description="File content before changes")
     after_edit: str = Field(default="", description="File content after changes")
