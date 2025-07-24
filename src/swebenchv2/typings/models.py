@@ -9,15 +9,15 @@ from swebenchv2.typings.prs import PullRequest
 
 
 class FileData(BaseModel):
-    sha: str = Field(..., description="File SHA")
+    sha: str = Field(default="", description="File SHA")
     filename: str = Field(..., description="File path and name")
     status: str = Field(..., description="File status (added, modified, removed)")
     additions: int = Field(..., description="Number of lines added")
     deletions: int = Field(..., description="Number of lines deleted")
     changes: int = Field(..., description="Total number of changes")
-    blob_url: str = Field(..., description="Blob URL for the file")
-    raw_url: str = Field(..., description="Raw URL for the file content")
-    contents_url: str = Field(..., description="Contents URL for the file")
+    blob_url: str | None = Field(default="", description="Blob URL for the file")
+    raw_url: str | None = Field(default="", description="Raw URL for the file content")
+    contents_url: str = Field(default="", description="Contents URL for the file")
     before_edit: str = Field(default="", description="File content before changes")
     after_edit: str = Field(default="", description="File content after changes")
     patch: str = Field(default="", description="Git patch/diff")
@@ -30,7 +30,7 @@ class TrainingData(BaseModel):
 
 
 class ExtractionResult(BaseModel):
-    repository: str = Field(..., description="Repository name in format owner/repo")
+    repository: str = Field(..., description="Repository name in format Mai0313/SWEBenchV2")
     extracted_at: str = Field(..., description="Extraction timestamp")
     total_prs: int = Field(..., description="Total number of PRs processed")
     prs: list[TrainingData] = Field(default=[], description="List of training data for each PR")

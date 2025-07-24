@@ -18,7 +18,7 @@ The project extracts training data from actual merged pull requests from GitHub 
 
 The project provides a fully documented command-line interface for easy data extraction with multiple execution methods. All CLI functions now include comprehensive Google-style docstrings:
 
-- **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/owner/repo"`
+- **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"`
 - **Sync Mode**: `swebenchv2 main --repo_url="..."`
 - **Async Mode**: `swebenchv2 a_main --repo_url="..."` (recommended for large repositories)
 - **Poethepoet Task**: `poe main --repo_url="..."`
@@ -33,7 +33,7 @@ Installation for CLI usage:
 ```bash
 uv pip install -e .  # Install package in development mode
 export GITHUB_TOKEN="your_token_here"
-swebenchv2 --repo_url="https://github.com/owner/repo"
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 ```
 
 ### GitHubPRExtractor (`src/swebenchv2/datamodule/github.py`)
@@ -45,7 +45,7 @@ The main extraction engine with comprehensive documentation for all methods. Eve
 - **Rate Limit Management**: Automatically handles GitHub API rate limits with intelligent waiting
 - **Content Extraction**: Retrieves before/after file contents for each modified file in PRs
 - **Data Structuring**: Converts raw GitHub data into structured training datasets
-- **URL Parsing**: Accepts full GitHub URLs and automatically extracts owner/repository names
+- **URL Parsing**: Accepts full GitHub URLs and automatically extracts Mai0313/SWEBenchV2sitory names
 - **High-Performance Async**: Multi-level concurrent processing with `asyncio.gather()` optimizations
 
 Key Classes:
@@ -161,14 +161,14 @@ This enables running with `poe main --repo_url="..."` for development convenienc
 
 ### Extraction Parameters
 
-- `repo_url`: Target repository URL (e.g., `https://github.com/owner/repo` or `owner/repo`)
+- `repo_url`: Target repository URL (e.g., `https://github.com/Mai0313/SWEBenchV2` or `Mai0313/SWEBenchV2`)
 - `max_page`: Limit pagination depth
 - `per_page`: Results per API request page
 - `token`: Optional direct token specification (overrides environment variable)
 
 ## Data Flow Architecture
 
-1. **Input**: Repository specification (URL or owner/repo format)
+1. **Input**: Repository specification (URL or Mai0313/SWEBenchV2 format)
 2. **Discovery**: Find all merged PRs using GitHub API with intelligent pagination
 3. **Analysis**: For each PR, extract file changes and content using concurrent before/after SHA fetching
 4. **Processing**: Convert to structured training format with parallel file content retrieval
@@ -277,12 +277,53 @@ class GitHubFile(BaseModel):
 - Mock GitHub API calls in tests to avoid rate limiting
 - Test edge cases (empty repos, no merged PRs, API failures)
 - Validate data model serialization/deserialization
-- Test CLI functionality after package installation with multiple execution methods:
-    - `swebenchv2 --help`
-    - `poe main --help`
-    - `python src/swebenchv2/cli.py --help`
-    - `uv run cli --help`
-    - `uv run swebenchv2 --help`
+
+### CLI Testing (`tests/test_cli.py`)
+
+Comprehensive CLI testing covering all execution methods and input formats. The CLI test suite includes:
+
+#### **Execution Methods Tested**:
+
+- `uv run cli --repo_url <url>` - UV package runner with cli entry point
+- `uv run swebenchv2 --repo_url <url>` - UV package runner with swebenchv2 entry point
+- `python src/swebenchv2/cli.py --repo_url <url>` - Direct Python module execution
+- `poe main --repo_url <url>` - Poethepoet task runner execution
+
+#### **Repository URL Formats Tested**:
+
+- Short format: `"Mai0313/SWEBenchV2
+- Full URL format: `"https://github.com/Mai0313/SWEBenchV2
+
+#### **Test Categories**:
+
+- **Mock Tests** (`TestCLIWithMockedExtraction`): Test function logic with mocked GitHub API
+- **Integration Tests** (`TestIntegrationCLI`): Real subprocess execution with actual CLI commands
+- **Error Handling Tests** (`TestCLIErrorHandling`): Invalid input and edge case handling
+- **Documentation Tests** (`TestAsyncCLIFunctions`): Verify docstring compliance and quality
+
+#### **Test Implementation Features**:
+
+- Uses `@pytest.mark.parametrize` to test multiple repo URL formats efficiently
+- Default test parameters: `max_page=1`, `per_page=1` to minimize GitHub API usage
+- Integration tests handle authentication gracefully (pass if token missing)
+- All tests include comprehensive docstrings explaining purpose and behavior
+- Tests verify both successful execution and proper error handling
+
+#### **Running CLI Tests**:
+
+```bash
+# Run all CLI tests
+uv run python -m pytest tests/test_cli.py -v
+
+# Run specific test categories
+uv run python -m pytest tests/test_cli.py::TestCLIWithMockedExtraction -v
+uv run python -m pytest tests/test_cli.py::TestIntegrationCLI -v
+
+# Run with slow tests (integration tests)
+uv run python -m pytest tests/test_cli.py -v -m "not slow"  # Skip slow tests
+uv run python -m pytest tests/test_cli.py -v  # Run all including slow tests
+```
+
 - **Documentation Testing**: Verify that all new functions include proper docstrings
 - **Test Documentation**: All test functions should also include clear docstrings explaining test purpose
 

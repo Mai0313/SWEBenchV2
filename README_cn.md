@@ -94,16 +94,16 @@ export GITHUB_TOKEN="your_github_token_here"
 
 ```bash
 # 基本使用 - 從儲存庫提取 PR
-swebenchv2 --repo_url="https://github.com/owner/repo"
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # 使用自定義參數
-swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=5 --per_page=50
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=5 --per_page=50
 
 # 使用同步模式
-swebenchv2 main --repo_url="https://github.com/owner/repo"
+swebenchv2 main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # 使用異步模式（對大型儲存庫更快）
-swebenchv2 a_main --repo_url="https://github.com/owner/repo"
+swebenchv2 a_main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
 ```
@@ -142,19 +142,19 @@ for pr in merged_prs[:3]:
 
 ```bash
 # 方法 1：直接 CLI（pip install -e . 後）
-swebenchv2 --repo_url="https://github.com/owner/repo"
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # 方法 2：使用 poethepoet 任務
-poe main --repo_url="https://github.com/owner/repo"
+poe main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # 方法 3：直接 Python 模組執行
-python src/swebenchv2/cli.py --repo_url="https://github.com/owner/repo"
+python src/swebenchv2/cli.py --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # 方法 4：使用 uv run 與 cli 入口點
-uv run cli --repo_url="https://github.com/owner/repo"
+uv run cli --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # 方法 5：使用 uv run 與 swebenchv2 入口點
-uv run swebenchv2 --repo_url="https://github.com/owner/repo"
+uv run swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
 ```
@@ -228,7 +228,7 @@ result = asyncio.run(extract_data())
 
 ```json
 {
-  "repository": "owner/repo",
+  "repository": "Mai0313/SWEBenchV2",
   "extracted_at": "2024-01-01T12:00:00",
   "total_prs": 100,
   "prs": [

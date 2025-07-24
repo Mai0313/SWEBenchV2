@@ -66,7 +66,7 @@ class Repository(BaseModel):
     id: int = Field(..., description="Unique repository ID")
     node_id: str = Field(..., description="GraphQL node ID")
     name: str = Field(..., description="Repository name")
-    full_name: str = Field(..., description="Full repository name (owner/repo)")
+    full_name: str = Field(..., description="Full repository name (Mai0313/SWEBenchV2)")
     owner: User = Field(..., description="Repository owner")
     private: bool = Field(..., description="Whether repository is private")
     html_url: str = Field(..., description="GitHub repository URL")

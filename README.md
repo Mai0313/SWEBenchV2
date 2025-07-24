@@ -94,16 +94,16 @@ After installing the package, you can use the `swebenchv2` command directly:
 
 ```bash
 # Basic usage - extract PRs from a repository
-swebenchv2 --repo_url="https://github.com/owner/repo"
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # With custom parameters
-swebenchv2 --repo_url="https://github.com/owner/repo" --max_page=5 --per_page=50
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=5 --per_page=50
 
 # Using synchronous mode
-swebenchv2 main --repo_url="https://github.com/owner/repo"
+swebenchv2 main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # Using asynchronous mode (faster for large repositories)
-swebenchv2 a_main --repo_url="https://github.com/owner/repo"
+swebenchv2 a_main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
 ```
@@ -142,19 +142,19 @@ You can run the tool in several different ways:
 
 ```bash
 # Method 1: Direct CLI (after pip install -e .)
-swebenchv2 --repo_url="https://github.com/owner/repo"
+swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # Method 2: Using poethepoet task
-poe main --repo_url="https://github.com/owner/repo"
+poe main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # Method 3: Direct Python module execution
-python src/swebenchv2/cli.py --repo_url="https://github.com/owner/repo"
+python src/swebenchv2/cli.py --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # Method 4: Using uv run with cli entry point
-uv run cli --repo_url="https://github.com/owner/repo"
+uv run cli --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # Method 5: Using uv run with swebenchv2 entry point
-uv run swebenchv2 --repo_url="https://github.com/owner/repo"
+uv run swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 # The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
 ```
@@ -228,7 +228,7 @@ The extracted data is saved in JSON format with the following structure:
 
 ```json
 {
-  "repository": "owner/repo",
+  "repository": "Mai0313/SWEBenchV2",
   "extracted_at": "2024-01-01T12:00:00",
   "total_prs": 100,
   "prs": [
