@@ -226,6 +226,41 @@ uv run pytest -m asyncio
 uv run pytest -m "not slow"
 ```
 
+### CLI Testing (`tests/test_cli.py`)
+
+The CLI testing suite comprehensively tests all execution methods and input formats:
+
+#### **Tested CLI Commands**:
+- `uv run cli --repo_url <url>` - UV package runner with cli entry point
+- `uv run swebenchv2 --repo_url <url>` - UV package runner with swebenchv2 entry point
+- `python src/swebenchv2/cli.py --repo_url <url>` - Direct Python module execution
+- `poe main --repo_url <url>` - Poethepoet task runner execution
+
+#### **Tested Repository URL Formats**:
+- Short format: `"Mai0313/repo_template"`
+- Full URL format: `"https://github.com/Mai0313/repo_template"`
+
+#### **Test Categories**:
+- **Mock Tests**: Function logic with mocked GitHub API to avoid rate limits
+- **Integration Tests**: Real subprocess execution with actual CLI commands
+- **Error Handling**: Invalid input scenarios and edge cases
+- **Documentation Tests**: Verify docstring compliance and quality
+
+#### **Running CLI Tests**:
+```bash
+# Run all CLI tests
+uv run python -m pytest tests/test_cli.py -v
+
+# Run only mock tests (fast)
+uv run python -m pytest tests/test_cli.py::TestCLIWithMockedExtraction -v
+
+# Run only integration tests (slow, requires actual CLI execution)
+uv run python -m pytest tests/test_cli.py::TestIntegrationCLI -v
+
+# Skip slow integration tests
+uv run python -m pytest tests/test_cli.py -v -m "not slow"
+```
+
 ### Common Development Tasks
 
 ```bash

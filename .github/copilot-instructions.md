@@ -277,12 +277,53 @@ class GitHubFile(BaseModel):
 - Mock GitHub API calls in tests to avoid rate limiting
 - Test edge cases (empty repos, no merged PRs, API failures)
 - Validate data model serialization/deserialization
-- Test CLI functionality after package installation with multiple execution methods:
-    - `swebenchv2 --help`
-    - `poe main --help`
-    - `python src/swebenchv2/cli.py --help`
-    - `uv run cli --help`
-    - `uv run swebenchv2 --help`
+
+### CLI Testing (`tests/test_cli.py`)
+
+Comprehensive CLI testing covering all execution methods and input formats. The CLI test suite includes:
+
+#### **Execution Methods Tested**:
+
+- `uv run cli --repo_url <url>` - UV package runner with cli entry point
+- `uv run swebenchv2 --repo_url <url>` - UV package runner with swebenchv2 entry point
+- `python src/swebenchv2/cli.py --repo_url <url>` - Direct Python module execution
+- `poe main --repo_url <url>` - Poethepoet task runner execution
+
+#### **Repository URL Formats Tested**:
+
+- Short format: `"Mai0313/repo_template"`
+- Full URL format: `"https://github.com/Mai0313/repo_template"`
+
+#### **Test Categories**:
+
+- **Mock Tests** (`TestCLIWithMockedExtraction`): Test function logic with mocked GitHub API
+- **Integration Tests** (`TestIntegrationCLI`): Real subprocess execution with actual CLI commands
+- **Error Handling Tests** (`TestCLIErrorHandling`): Invalid input and edge case handling
+- **Documentation Tests** (`TestAsyncCLIFunctions`): Verify docstring compliance and quality
+
+#### **Test Implementation Features**:
+
+- Uses `@pytest.mark.parametrize` to test multiple repo URL formats efficiently
+- Default test parameters: `max_page=1`, `per_page=1` to minimize GitHub API usage
+- Integration tests handle authentication gracefully (pass if token missing)
+- All tests include comprehensive docstrings explaining purpose and behavior
+- Tests verify both successful execution and proper error handling
+
+#### **Running CLI Tests**:
+
+```bash
+# Run all CLI tests
+uv run python -m pytest tests/test_cli.py -v
+
+# Run specific test categories
+uv run python -m pytest tests/test_cli.py::TestCLIWithMockedExtraction -v
+uv run python -m pytest tests/test_cli.py::TestIntegrationCLI -v
+
+# Run with slow tests (integration tests)
+uv run python -m pytest tests/test_cli.py -v -m "not slow"  # Skip slow tests
+uv run python -m pytest tests/test_cli.py -v  # Run all including slow tests
+```
+
 - **Documentation Testing**: Verify that all new functions include proper docstrings
 - **Test Documentation**: All test functions should also include clear docstrings explaining test purpose
 
