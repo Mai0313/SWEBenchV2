@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Documentation Update Hook",
+  "description": "Monitors changes in the src directory and automatically updates README.md (English), README_cn.md (Traditional Chinese), CONTRIBUTING, and .github/copilot-instructions.md files based on current project functionality",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "src/**/*.py",
+      "pyproject.toml",
+      "Makefile"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "請依照現有專案 尤其是 `src` 裡面的文件 來確認當前的功能\n依照當前的功能去更新 README.md, README_cn.md, CONTRIBUTING 和 .github/copilot-instructions.md\nREADME.md: 這份文件請用英文來撰寫, 他是面向使用者, 所以大多數內容應該專注於 \"如何使用\" 而不是 \"如何開發\"\nREADME_cn.md: 這份文件請用繁體中文來撰寫, 他是面向使用者, 所以大多數內容應該專注於 \"如何使用\" 而不是 \"如何開發\"\nCONTRIBUTING: 這份文件請用英文來撰寫, 主要是引導使用者如何貢獻代碼和協作\n.github/copilot-instructions.md: 這份是詳細的技術細節, 會詳細講述每一個 function 的用途, 和每一個功能的細節操作"
+  }
+}
