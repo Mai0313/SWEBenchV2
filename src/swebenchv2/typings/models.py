@@ -25,7 +25,9 @@ class FileData(BaseModel):
 
 
 class TrainingData(BaseModel):
-    pr_info: PullRequest | GiteaPullRequest = Field(..., description="Pull request information", exclude=True)
+    pr_info: PullRequest | GiteaPullRequest = Field(
+        ..., description="Pull request information", exclude=True
+    )
     question: str = Field(..., description="Formatted question based on PR title and description")
     files: list[FileData] = Field(default=[], description="List of modified files")
 

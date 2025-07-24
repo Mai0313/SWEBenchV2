@@ -1,8 +1,8 @@
 import pytest
 
-from swebenchv2.typings.gitea_prs import GiteaPullRequest
 from swebenchv2.typings.models import FileData, TrainingData, ExtractionResult
 from swebenchv2.datamodule.gitea import GiteaPRExtractor, AsyncGiteaPRExtractor
+from swebenchv2.typings.gitea_prs import GiteaPullRequest
 
 short_url = "gitea/gitea-mcp"
 full_url = "https://gitea.com/gitea/gitea-mcp"

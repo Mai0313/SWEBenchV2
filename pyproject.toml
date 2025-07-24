@@ -381,6 +381,8 @@ ignore = [
     "PERF401",
     # Use `list` or `list.copy` to create a copy of a list
     "PERF402",
+    # Allow SSL off
+    "S501",
     ]
 
 [tool.ruff.lint.pycodestyle]

@@ -291,8 +291,8 @@ Comprehensive CLI testing covering all execution methods and input formats. The 
 
 #### **Repository URL Formats Tested**:
 
-- Short format: `"Mai0313/SWEBenchV2
-- Full URL format: `"https://github.com/Mai0313/SWEBenchV2
+- Short format: `Mai0313/SWEBenchV2`
+- Full URL format: `https://github.com/Mai0313/SWEBenchV2`
 
 #### **Test Categories**:
 

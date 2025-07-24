@@ -16,9 +16,8 @@ from pydantic_settings import BaseSettings
 # Disable SSL warnings for Gitea requests
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-from swebenchv2.typings.gitea_prs import GiteaPullRequest
-from swebenchv2.typings.limit import RateLimit
 from swebenchv2.typings.models import FileData, TrainingData, ExtractionResult
+from swebenchv2.typings.gitea_prs import GiteaPullRequest
 
 logfire.configure(send_to_logfire=False)
 dotenv.load_dotenv()
@@ -133,7 +132,9 @@ class GiteaPRExtractor(GiteaPRExtractorBase):
         all_prs: list[GiteaPullRequest] = []
         page = 1
 
-        with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10, verify=False) as client:
+        with httpx.Client(
+            base_url=self.base_url, headers=self.headers, timeout=10, verify=False
+        ) as client:
             while True:
                 if page > self._max_page:
                     break
@@ -170,7 +171,9 @@ class GiteaPRExtractor(GiteaPRExtractorBase):
 
                 # Only keep merged PRs
                 merged_prs = [
-                    GiteaPullRequest(**pr) for pr in response_list if pr.get("merged_at") is not None
+                    GiteaPullRequest(**pr)
+                    for pr in response_list
+                    if pr.get("merged_at") is not None
                 ]
                 all_prs.extend(merged_prs)
 
@@ -198,7 +201,9 @@ class GiteaPRExtractor(GiteaPRExtractorBase):
         Returns:
             list[FileData]: List of file data objects representing all modified files.
         """
-        with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10, verify=False) as client:
+        with httpx.Client(
+            base_url=self.base_url, headers=self.headers, timeout=10, verify=False
+        ) as client:
             logfire.info(f"Fetching files for PR #{pr_number}")
             response = client.get(
                 url=f"/repos/{self.repo_owner}/{self.repo_name}/pulls/{pr_number}/files"
@@ -221,7 +226,9 @@ class GiteaPRExtractor(GiteaPRExtractorBase):
         Returns:
             str: The decoded file content as a string, or empty string if not found.
         """
-        with httpx.Client(base_url=self.base_url, headers=self.headers, timeout=10, verify=False) as client:
+        with httpx.Client(
+            base_url=self.base_url, headers=self.headers, timeout=10, verify=False
+        ) as client:
             response = client.get(
                 url=f"/repos/{self.repo_owner}/{self.repo_name}/contents/{file_path}",
                 params={"ref": sha},
@@ -362,7 +369,9 @@ class AsyncGiteaPRExtractor(GiteaPRExtractorBase):
 
                 # Only keep merged PRs
                 merged_prs = [
-                    GiteaPullRequest(**pr) for pr in response_list if pr.get("merged_at") is not None
+                    GiteaPullRequest(**pr)
+                    for pr in response_list
+                    if pr.get("merged_at") is not None
                 ]
                 all_prs.extend(merged_prs)
 
