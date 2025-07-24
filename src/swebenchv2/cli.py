@@ -1,5 +1,5 @@
-from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 from swebenchv2.datamodule.gitea import AsyncGiteaPRExtractor
+from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 
 
 async def extract(repo_url: str, max_page: int = 1, per_page: int = 1) -> None:
