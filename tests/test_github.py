@@ -5,11 +5,12 @@ from swebenchv2.typings.limit import RateLimit
 from swebenchv2.typings.models import FileData, TrainingData, ExtractionResult
 from swebenchv2.datamodule.github import GitHubPRExtractor, AsyncGitHubPRExtractor
 
+short_url = "Mai0313/repo_template"
+full_url = "https://github.com/Mai0313/repo_template"
+
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 def test_get_rate_limit(repo_url: str) -> None:
     extractor = GitHubPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -18,9 +19,7 @@ def test_get_rate_limit(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 @pytest.mark.asyncio
 async def test_get_rate_limit_async(repo_url: str) -> None:
@@ -30,9 +29,7 @@ async def test_get_rate_limit_async(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 def test_get_merged_prs(repo_url: str) -> None:
     extractor = GitHubPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -42,9 +39,7 @@ def test_get_merged_prs(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 @pytest.mark.asyncio
 async def test_get_merged_prs_async(repo_url: str) -> None:
@@ -55,9 +50,7 @@ async def test_get_merged_prs_async(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 def test_get_pr_files(repo_url: str) -> None:
     extractor = GitHubPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -67,9 +60,7 @@ def test_get_pr_files(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 @pytest.mark.asyncio
 async def test_get_pr_files_async(repo_url: str) -> None:
@@ -80,9 +71,7 @@ async def test_get_pr_files_async(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 def test_get_file_content(repo_url: str) -> None:
     extractor = GitHubPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -93,9 +82,7 @@ def test_get_file_content(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 @pytest.mark.asyncio
 async def test_get_file_content_async(repo_url: str) -> None:
@@ -107,9 +94,7 @@ async def test_get_file_content_async(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 def test_extract_pr_data(repo_url: str) -> None:
     extractor = GitHubPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -119,9 +104,7 @@ def test_extract_pr_data(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 @pytest.mark.asyncio
 async def test_extract_pr_data_async(repo_url: str) -> None:
@@ -132,9 +115,7 @@ async def test_extract_pr_data_async(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 def test_extract_all_pr_data(repo_url: str) -> None:
     extractor = GitHubPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -146,9 +127,7 @@ def test_extract_all_pr_data(repo_url: str) -> None:
 
 
 @pytest.mark.parametrize(
-    argnames="repo_url",
-    argvalues=["Mai0313/repo_template", "https://github.com/Mai0313/repo_template"],
-    ids=["reponame_only", "full_url"],
+    argnames="repo_url", argvalues=[short_url, full_url], ids=["reponame_only", "full_url"]
 )
 @pytest.mark.asyncio
 async def test_extract_all_pr_data_async(repo_url: str) -> None:

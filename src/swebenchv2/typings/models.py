@@ -30,7 +30,7 @@ class TrainingData(BaseModel):
 
 
 class ExtractionResult(BaseModel):
-    repository: str = Field(..., description="Repository name in format owner/repo")
+    repository: str = Field(..., description="Repository name in format Mai0313/SWEBenchV2")
     extracted_at: str = Field(..., description="Extraction timestamp")
     total_prs: int = Field(..., description="Total number of PRs processed")
     prs: list[TrainingData] = Field(default=[], description="List of training data for each PR")
