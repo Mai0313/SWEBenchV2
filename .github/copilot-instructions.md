@@ -8,7 +8,7 @@
 
 SWEBenchV2 is an innovative alternative to SWE-Bench that focuses on measuring how closely AI models match real developer coding patterns rather than binary correctness. Instead of asking "Did the model get the right answer?", we ask "How closely does the model's approach match what experienced developers actually do?"
 
-The project extracts training data from actual merged pull requests from GitHub repositories, creating benchmark datasets that capture not just correctness but also coding style, problem-solving approach, and adherence to project conventions.
+The project extracts training data from actual merged pull requests from GitHub and Gitea repositories, creating benchmark datasets that capture not just correctness but also coding style, problem-solving approach, and adherence to project conventions.
 
 # Project Structure / Features
 
@@ -18,13 +18,14 @@ The project extracts training data from actual merged pull requests from GitHub 
 
 The project provides a fully documented command-line interface for easy data extraction with multiple execution methods. All CLI functions now include comprehensive Google-style docstrings:
 
-- **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"`
+- **Direct CLI Usage**: `swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"` or `swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"`
 - **Sync Mode**: `swebenchv2 main --repo_url="..."`
 - **Async Mode**: `swebenchv2 a_main --repo_url="..."` (recommended for large repositories)
 - **Poethepoet Task**: `poe main --repo_url="..."`
 - **Python Module**: `python src/swebenchv2/cli.py --repo_url="..."`
 - **UV Run CLI**: `uv run cli --repo_url="..."`
 - **UV Run SWEBenchV2**: `uv run swebenchv2 --repo_url="..."`
+- **UVX**: `uvx swebenchv2 --repo_url="..."` (new addition)
 - **Custom Parameters**: `--max_page`, `--per_page` for fine-tuning extraction
 - **JSON Output**: Automatically saves to `./data/{owner}/{repo}/log_{timestamp}.json`
 
@@ -36,11 +37,11 @@ export GITHUB_TOKEN="your_token_here"
 swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 ```
 
-### GitHubPRExtractor (`src/swebenchv2/datamodule/github.py`)
+### GitHubPRExtractor (`src/swebenchv2/datamodule/github.py`) & GiteaPRExtractor (`src/swebenchv2/datamodule/gitea.py`)
 
-The main extraction engine with comprehensive documentation for all methods. Every function includes detailed Google-style docstrings covering:
+The main extraction engines with comprehensive documentation for all methods. Every function includes detailed Google-style docstrings covering:
 
-- **GitHub API Integration**: Connects to GitHub repositories using authenticated API requests
+- **GitHub & Gitea API Integration**: Connects to GitHub and Gitea repositories using authenticated API requests
 - **PR Discovery**: Finds and filters merged pull requests using pagination and state filtering
 - **Rate Limit Management**: Automatically handles GitHub API rate limits with intelligent waiting
 - **Content Extraction**: Retrieves before/after file contents for each modified file in PRs
@@ -50,9 +51,12 @@ The main extraction engine with comprehensive documentation for all methods. Eve
 
 Key Classes:
 
-- `GitHubPRExtractorBase`: Base configuration class with URL parsing and shared settings
-- `GitHubPRExtractor`: Synchronous implementation for data extraction
-- `AsyncGitHubPRExtractor`: Asynchronous implementation with optimized concurrent processing featuring:
+- `GitHubPRExtractorBase`: Base configuration class with URL parsing and shared settings for GitHub
+- `GitHubPRExtractor`: Synchronous implementation for GitHub data extraction
+- `AsyncGitHubPRExtractor`: Asynchronous implementation with optimized concurrent processing for GitHub
+- `GiteaPRExtractorBase`: Base configuration class with URL parsing and shared settings for Gitea
+- `GiteaPRExtractor`: Synchronous implementation for Gitea data extraction
+- `AsyncGiteaPRExtractor`: Asynchronous implementation with optimized concurrent processing for Gitea featuring:
     - Multi-level `asyncio.gather()` usage for maximum throughput
     - Semaphore-controlled concurrency (5 for PRs, 10 for files)
     - Parallel before/after content fetching for modified files
@@ -79,9 +83,9 @@ Key Methods (All Fully Documented):
 
 All data models now include comprehensive documentation for their methods and functionality.
 
-### PullRequest Model (`prs.py`)
+### PullRequest Model (`prs.py`) & GiteaPullRequest Model (`gitea_prs.py`)
 
-Comprehensive Pydantic model representing GitHub PR data including:
+Comprehensive Pydantic models representing GitHub and Gitea PR data including:
 
 - Basic PR info (number, title, body, state)
 - User information and associations
@@ -158,10 +162,12 @@ This enables running with `poe main --repo_url="..."` for development convenienc
 
 - `GITHUB_TOKEN`: GitHub API authentication token
 - `GITHUB_API_BASE_URL`: Custom GitHub API endpoint (default: api.github.com)
+- `GITEA_TOKEN`: Gitea API authentication token
+- `GITEA_API_BASE_URL`: Custom Gitea API endpoint (default: gitea.com/api/v1)
 
 ### Extraction Parameters
 
-- `repo_url`: Target repository URL (e.g., `https://github.com/Mai0313/SWEBenchV2` or `Mai0313/SWEBenchV2`)
+- `repo_url`: Target repository URL (e.g., `https://github.com/Mai0313/SWEBenchV2`, `Mai0313/SWEBenchV2`, `https://gitea.com/gitea/gitea-mcp`, or `gitea/gitea-mcp`)
 - `max_page`: Limit pagination depth
 - `per_page`: Results per API request page
 - `token`: Optional direct token specification (overrides environment variable)
@@ -247,14 +253,15 @@ class GitHubFile(BaseModel):
     after_edit: str = Field(default="", description="File content after changes")
 ```
 
-## GitHub API Integration
+## GitHub & Gitea API Integration
 
-- Always handle rate limits gracefully with automatic waiting
+- Always handle rate limits gracefully with automatic waiting (GitHub has stricter limits)
 - Use proper authentication headers for all requests
 - Implement robust error handling for API failures
 - Log all API interactions for debugging
 - Cache API responses when appropriate to reduce requests
 - Leverage `asyncio.gather()` for parallel API calls in async implementations
+- Support both GitHub and Gitea URL formats and authentication methods
 
 ## Data Processing
 
@@ -291,8 +298,10 @@ Comprehensive CLI testing covering all execution methods and input formats. The 
 
 #### **Repository URL Formats Tested**:
 
-- Short format: `Mai0313/SWEBenchV2`
-- Full URL format: `https://github.com/Mai0313/SWEBenchV2`
+- GitHub short format: `Mai0313/SWEBenchV2`
+- GitHub full URL format: `https://github.com/Mai0313/SWEBenchV2`
+- Gitea short format: `gitea/gitea-mcp`
+- Gitea full URL format: `https://gitea.com/gitea/gitea-mcp`
 
 #### **Test Categories**:
 

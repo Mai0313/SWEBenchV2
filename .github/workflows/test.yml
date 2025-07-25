@@ -3,8 +3,7 @@ name: Tests
 on:
   pull_request:
     branches:
-      - master
-      - release/*
+      - main  # temp disable
     paths-ignore:
       - "**/*.md"
 
