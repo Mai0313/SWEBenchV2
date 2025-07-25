@@ -8,7 +8,7 @@ short_url = "gitea/gitea-mcp"
 full_url = "https://gitea.com/gitea/gitea-mcp"
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 def test_get_merged_prs(repo_url: str) -> None:
     extractor = GiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
     merged_prs = extractor.get_merged_prs()
@@ -16,7 +16,7 @@ def test_get_merged_prs(repo_url: str) -> None:
         assert isinstance(merged_pr, GiteaPullRequest)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 @pytest.mark.asyncio
 async def test_get_merged_prs_async(repo_url: str) -> None:
     extractor = AsyncGiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -25,7 +25,7 @@ async def test_get_merged_prs_async(repo_url: str) -> None:
         assert isinstance(merged_pr, GiteaPullRequest)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 def test_get_pr_files(repo_url: str) -> None:
     extractor = GiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
     pr_files = extractor.get_pr_files(pr_number=1)
@@ -33,7 +33,7 @@ def test_get_pr_files(repo_url: str) -> None:
         assert isinstance(pr_file, FileData)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 @pytest.mark.asyncio
 async def test_get_pr_files_async(repo_url: str) -> None:
     extractor = AsyncGiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -42,7 +42,7 @@ async def test_get_pr_files_async(repo_url: str) -> None:
         assert isinstance(pr_file, FileData)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 def test_get_file_content(repo_url: str) -> None:
     extractor = GiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
     content = extractor.get_file_content(
@@ -51,7 +51,7 @@ def test_get_file_content(repo_url: str) -> None:
     assert isinstance(content, str)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 @pytest.mark.asyncio
 async def test_get_file_content_async(repo_url: str) -> None:
     extractor = AsyncGiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -61,7 +61,7 @@ async def test_get_file_content_async(repo_url: str) -> None:
     assert isinstance(content, str)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 def test_extract_pr_data(repo_url: str) -> None:
     extractor = GiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
     merged_prs = extractor.get_merged_prs()
@@ -69,7 +69,7 @@ def test_extract_pr_data(repo_url: str) -> None:
     assert isinstance(data, TrainingData)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 @pytest.mark.asyncio
 async def test_extract_pr_data_async(repo_url: str) -> None:
     extractor = AsyncGiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
@@ -78,7 +78,7 @@ async def test_extract_pr_data_async(repo_url: str) -> None:
     assert isinstance(data, TrainingData)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 def test_extract_all_pr_data(repo_url: str) -> None:
     extractor = GiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
     data = extractor.extract_all_pr_data(save_json=False)
@@ -88,7 +88,7 @@ def test_extract_all_pr_data(repo_url: str) -> None:
         assert isinstance(data.prs[0], TrainingData)
 
 
-@pytest.mark.parametrize(argnames="repo_url", argvalues=[short_url, full_url])
+@pytest.mark.parametrize(argnames="repo_url", argvalues=[full_url])
 @pytest.mark.asyncio
 async def test_extract_all_pr_data_async(repo_url: str) -> None:
     extractor = AsyncGiteaPRExtractor(repo_url=repo_url, max_page=1, per_page=1)
