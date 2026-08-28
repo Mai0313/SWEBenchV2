@@ -1,3 +1,4 @@
+from swebenchv2.datamodule.gitea import AsyncGiteaPRExtractor
 from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
 
 
@@ -36,7 +37,10 @@ async def extract(repo_url: str, max_page: int = 1, per_page: int = 1) -> None:
         - Uses asynchronous processing for optimal performance with concurrent API calls
         - Automatically handles GitHub API rate limits with intelligent waiting
     """
-    extractor = AsyncGitHubPRExtractor(repo_url=repo_url, max_page=max_page, per_page=per_page)
+    if "github.com" in repo_url:
+        extractor = AsyncGitHubPRExtractor(repo_url=repo_url, max_page=max_page, per_page=per_page)
+    else:
+        extractor = AsyncGiteaPRExtractor(repo_url=repo_url, max_page=max_page, per_page=per_page)
     await extractor.extract_all_pr_data(save_json=True)
 
 

@@ -67,10 +67,13 @@ We welcome various types of contributions:
 
 The project is structured around several key components:
 
-1. **GitHubPRExtractorBase**: Base configuration class with URL parsing
-2. **GitHubPRExtractor**: Synchronous implementation for data extraction
-3. **AsyncGitHubPRExtractor**: Asynchronous implementation for better performance
-4. **Data Models**: Pydantic models for type safety and validation
+1. **GitHubPRExtractorBase**: Base configuration class with URL parsing for GitHub
+2. **GitHubPRExtractor**: Synchronous implementation for GitHub data extraction
+3. **AsyncGitHubPRExtractor**: Asynchronous implementation for better GitHub performance
+4. **GiteaPRExtractorBase**: Base configuration class with URL parsing for Gitea
+5. **GiteaPRExtractor**: Synchronous implementation for Gitea data extraction
+6. **AsyncGiteaPRExtractor**: Asynchronous implementation for better Gitea performance
+7. **Data Models**: Pydantic models for type safety and validation
 
 ### Key Design Decisions
 
@@ -156,23 +159,26 @@ class FileData(BaseModel):
     deletions: int = Field(..., description="Number of lines deleted")
 ```
 
-### GitHub API Integration
+### GitHub & Gitea API Integration
 
-When working with GitHub API code:
+When working with GitHub or Gitea API code:
 
-- **Always handle rate limits** gracefully with automatic waiting
+- **Always handle rate limits** gracefully with automatic waiting (GitHub has stricter limits)
 - **Use proper authentication** headers for all requests
 - **Implement robust error handling** for API failures
 - **Log API interactions** for debugging purposes
 - **Mock API calls in tests** to avoid rate limiting during testing
+- **Support both GitHub and Gitea** URL formats and authentication methods
 
 ### Repository URL Handling
 
 The project now uses a unified `repo_url` parameter that accepts:
 - Full GitHub URLs: `https://github.com/Mai0313/SWEBenchV2`
-- Short format: `Mai0313/SWEBenchV2`
+- Short GitHub format: `Mai0313/SWEBenchV2`
+- Full Gitea URLs: `https://gitea.com/gitea/gitea-mcp`
+- Short Gitea format: `gitea/gitea-mcp`
 
-The URL parsing is handled automatically by the `GitHubPRExtractorBase` class using computed fields.
+The URL parsing is handled automatically by the `GitHubPRExtractorBase` and `GiteaPRExtractorBase` classes using computed fields.
 
 ### Asynchronous Support
 
@@ -180,23 +186,32 @@ For performance-critical applications, use the async version with optimized conc
 
 ```python
 from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
+from swebenchv2.datamodule.gitea import AsyncGiteaPRExtractor
 import asyncio
 
 async def extract_data():
-    extractor = AsyncGitHubPRExtractor(
+    # GitHub async extraction
+    github_extractor = AsyncGitHubPRExtractor(
         repo_url="https://github.com/Mai0313/SWEBenchV2"
     )
+
+    # Gitea async extraction
+    gitea_extractor = AsyncGiteaPRExtractor(
+        repo_url="https://gitea.com/gitea/gitea-mcp"
+    )
+
     # Multi-level concurrency optimization:
     # 1. File-level: concurrent before/after content fetching with asyncio.gather()
     # 2. PR-level: concurrent file processing with semaphore-controlled limits
     # 3. Repository-level: concurrent PR batch processing
-    result = await extractor.extract_all_pr_data(save_json=True)
-    return result
+    github_result = await github_extractor.extract_all_pr_data(save_json=True)
+    gitea_result = await gitea_extractor.extract_all_pr_data(save_json=True)
+    return github_result, gitea_result
 
 # Remember to use pytest.mark.asyncio for async tests
 @pytest.mark.asyncio
 async def test_async_extraction():
-    # Test async performance optimizations
+    # Test async performance optimizations for both GitHub and Gitea
     pass
 ```
 
@@ -267,11 +282,15 @@ uv run python -m pytest tests/test_cli.py -v -m "not slow"
 # Test the CLI directly (multiple methods available)
 swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
 
+# Test with Gitea repository
+swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp" --max_page=1 --per_page=5
+
 # Alternative execution methods:
 poe main --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
 python src/swebenchv2/cli.py --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
 uv run cli --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
 uv run swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
+uvx swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=1 --per_page=5
 
 # Test both sync and async implementations
 uv run pytest tests/test_github.py tests/test_async_github.py
@@ -324,6 +343,28 @@ class TestGitHubPRExtractor:
         # Test implementation here
         pass
 
+class TestGiteaPRExtractor:
+    """Test cases for GiteaPRExtractor class."""
+
+    def test_get_merged_prs_success(self):
+        """Test successful PR retrieval from Gitea."""
+        extractor = GiteaPRExtractor(
+            repo_url="https://gitea.com/gitea/gitea-mcp"
+        )
+        # Test implementation here
+        pass
+
+    @patch('httpx.Client')
+    def test_get_pr_files_with_gitea(self, mock_client):
+        """Test file extraction from Gitea PR."""
+        extractor = GiteaPRExtractor(
+            repo_url="https://gitea.com/gitea/gitea-mcp",
+            max_page=2,
+            per_page=10
+        )
+        # Test implementation here
+        pass
+
 class TestAsyncGitHubPRExtractor:
     """Test cases for AsyncGitHubPRExtractor class."""
 
@@ -332,6 +373,18 @@ class TestAsyncGitHubPRExtractor:
         """Test asynchronous data extraction."""
         extractor = AsyncGitHubPRExtractor(
             repo_url="https://github.com/Mai0313/SWEBenchV2"
+        )
+        # Async test implementation here
+        pass
+
+class TestAsyncGiteaPRExtractor:
+    """Test cases for AsyncGiteaPRExtractor class."""
+
+    @pytest.mark.asyncio
+    async def test_async_gitea_extraction(self):
+        """Test asynchronous Gitea data extraction."""
+        extractor = AsyncGiteaPRExtractor(
+            repo_url="https://gitea.com/gitea/gitea-mcp"
         )
         # Async test implementation here
         pass

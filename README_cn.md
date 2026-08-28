@@ -29,7 +29,7 @@
 - **🔍 真實世界數據**：從實際已合併的拉取請求中提取訓練數據
 - **📊 模式匹配**：專注於與開發者模式的相似性，而非簡單的對錯判斷
 - **📋 全面分析**：捕獲修改前後的代碼狀態、PR 上下文和元數據
-- **🔗 GitHub 整合**：無縫連接任何 GitHub 儲存庫
+- **🔗 GitHub & Gitea 整合**：無縫連接任何 GitHub 或 Gitea 儲存庫
 - **⚡ 高性能異步處理**：使用 `asyncio.gather()` 多層並發處理，實現最大化速度
 - **🚦 智能速率限制**：內建 GitHub API 速率限制管理，配合 semaphore 並發控制
 - **⚙️ 靈活配置**：針對不同使用情況的可配置提取參數
@@ -37,7 +37,7 @@
 
 ## 📊 工作原理
 
-1. **數據提取**：掃描 GitHub 儲存庫中已合併的拉取請求
+1. **數據提取**：掃描 GitHub 或 Gitea 儲存庫中已合併的拉取請求
 2. **內容捕獲**：記錄所有修改文件的修改前後狀態
 3. **上下文保存**：維護 PR 標題、描述和元數據
 4. **數據集生成**：創建適用於 LLM 評估的結構化訓練數據
@@ -93,8 +93,11 @@ export GITHUB_TOKEN="your_github_token_here"
 安裝套件後，您可以直接使用 `swebenchv2` 命令：
 
 ```bash
-# 基本使用 - 從儲存庫提取 PR
+# 基本使用 - 從 GitHub 儲存庫提取 PR
 swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
+
+# 從 Gitea 儲存庫提取 PR
+swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"
 
 # 使用自定義參數
 swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=5 --per_page=50
@@ -105,6 +108,9 @@ swebenchv2 main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 # 使用異步模式（對大型儲存庫更快）
 swebenchv2 a_main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
+# 也支援 Gitea 儲存庫
+swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"
+
 # 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
 ```
 
@@ -112,27 +118,37 @@ swebenchv2 a_main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 ```python
 from swebenchv2.datamodule.github import GitHubPRExtractor
+from swebenchv2.datamodule.gitea import GiteaPRExtractor
 
-# 初始化提取器
-extractor = GitHubPRExtractor(
-    repo_url="https://github.com/owner_name/repository_name",
+# 初始化 GitHub 提取器
+github_extractor = GitHubPRExtractor(
+    repo_url="https://github.com/Mai0313/SWEBenchV2",
     max_page=10,  # 限制提取頁面數
     per_page=50,  # 每頁 PR 數量
 )
 
-# 提取所有 PR 數據 - 現在包含完整的文檔字符串
-result = extractor.extract_all_pr_data(save_json=True)
-print(f"從 {result.repository} 提取了 {result.total_prs} 個 PR")
+# 初始化 Gitea 提取器
+gitea_extractor = GiteaPRExtractor(
+    repo_url="https://gitea.com/gitea/gitea-mcp", max_page=10, per_page=50
+)
+
+# 從 GitHub 提取所有 PR 數據 - 現在包含完整的文檔字符串
+github_result = github_extractor.extract_all_pr_data(save_json=True)
+print(f"從 {github_result.repository} 提取了 {github_result.total_prs} 個 PR")
+
+# 從 Gitea 提取所有 PR 數據
+gitea_result = gitea_extractor.extract_all_pr_data(save_json=True)
+print(f"從 {gitea_result.repository} 提取了 {gitea_result.total_prs} 個 PR")
 
 # 所有方法現在都包含詳細文檔
-# 提取前檢查速率限制
-rate_limit = extractor.get_rate_limit()  # 返回包含剩餘調用信息的 RateLimit
+# 提取前檢查速率限制（僅 GitHub）
+rate_limit = github_extractor.get_rate_limit()  # 返回包含剩餘調用信息的 RateLimit
 print(f"剩餘請求數：{rate_limit.rate.remaining}")
 
 # 獲取特定 PR 文件，包含完整文檔
-merged_prs = extractor.get_merged_prs()  # 返回帶分頁的 list[PullRequest]
+merged_prs = github_extractor.get_merged_prs()  # 返回帶分頁的 list[PullRequest]
 for pr in merged_prs[:3]:
-    files = extractor.get_pr_files(pr.number)  # 返回修改文件的 list[FileData]
+    files = github_extractor.get_pr_files(pr.number)  # 返回修改文件的 list[FileData]
     print(f"PR #{pr.number} 修改了 {len(files)} 個文件")
 ```
 
@@ -156,28 +172,50 @@ uv run cli --repo_url="https://github.com/Mai0313/SWEBenchV2"
 # 方法 5：使用 uv run 與 swebenchv2 入口點
 uv run swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
+# 方法 6：使用 uvx（新增）
+uvx swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
+
+# 所有方法都支援 Gitea 儲存庫
+swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"
+uvx swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"
+
 # 提取的數據將保存到 ./data/{owner}/{repo}/log_{timestamp}.json
 ```
 
 ### 高級配置
 
 ```python
-extractor = GitHubPRExtractor(
+# GitHub 配置
+github_extractor = GitHubPRExtractor(
     repo_url="https://github.com/your_org/your_repo",
     max_page=5,  # 限制為前 5 頁
     per_page=100,  # 每頁 100 個 PR
     token="your_token",  # 可選：直接設置令牌
 )
 
-# 提取前檢查速率限制
-rate_limit = extractor.get_rate_limit()
+# Gitea 配置
+gitea_extractor = GiteaPRExtractor(
+    repo_url="https://gitea.com/your_org/your_repo",
+    max_page=5,
+    per_page=100,
+    token="your_gitea_token",  # 可選：直接設置 Gitea 令牌
+)
+
+# 提取前檢查速率限制（僅 GitHub）
+rate_limit = github_extractor.get_rate_limit()
 print(f"剩餘請求數：{rate_limit.rate.remaining}")
 
-# 為特定 PR 提取數據
-merged_prs = extractor.get_merged_prs()
+# 為特定 GitHub PR 提取數據
+merged_prs = github_extractor.get_merged_prs()
 for pr in merged_prs[:5]:  # 處理前 5 個 PR
-    pr_data = extractor.extract_pr_data(pr)
+    pr_data = github_extractor.extract_pr_data(pr)
     print(f"已為 PR #{pr.number} 提取數據：{pr.title}")
+
+# 從 Gitea 提取數據（無需速率限制檢查）
+gitea_merged_prs = gitea_extractor.get_merged_prs()
+for pr in gitea_merged_prs[:5]:
+    pr_data = gitea_extractor.extract_pr_data(pr)
+    print(f"已提取 Gitea PR #{pr.number}：{pr.title}")
 ```
 
 ### 異步使用
@@ -187,24 +225,34 @@ for pr in merged_prs[:5]:  # 處理前 5 個 PR
 ```python
 import asyncio
 from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
+from swebenchv2.datamodule.gitea import AsyncGiteaPRExtractor
 
 
 async def extract_data():
-    extractor = AsyncGitHubPRExtractor(
+    # GitHub 異步提取
+    github_extractor = AsyncGitHubPRExtractor(
         repo_url="https://github.com/your_org/your_repo", max_page=5, per_page=100
+    )
+
+    # Gitea 異步提取
+    gitea_extractor = AsyncGiteaPRExtractor(
+        repo_url="https://gitea.com/your_org/your_repo", max_page=5, per_page=100
     )
 
     # 使用多層並發的異步提取
     # - 文件內容獲取：並發檢索修改前後內容
     # - PR 處理：使用 semaphore 控制的並發文件處理
     # - 批量處理：跨儲存庫的並發 PR 提取
-    result = await extractor.extract_all_pr_data(save_json=True)
-    print(f"使用高速異步處理提取了 {result.total_prs} 個 PR")
-    return result
+    github_result = await github_extractor.extract_all_pr_data(save_json=True)
+    gitea_result = await gitea_extractor.extract_all_pr_data(save_json=True)
+
+    print(f"使用高速異步處理提取了 {github_result.total_prs} 個 GitHub PR")
+    print(f"使用高速異步處理提取了 {gitea_result.total_prs} 個 Gitea PR")
+    return github_result, gitea_result
 
 
 # 運行異步提取
-result = asyncio.run(extract_data())
+github_result, gitea_result = asyncio.run(extract_data())
 ```
 
 ### 性能優勢
@@ -259,10 +307,12 @@ result = asyncio.run(extract_data())
 
 ### 環境變量
 
-| 變量                  | 描述                  | 默認值                   |
-| --------------------- | --------------------- | ------------------------ |
-| `GITHUB_TOKEN`        | GitHub API 令牌       | 無（私有儲存庫需要）     |
-| `GITHUB_API_BASE_URL` | 自定義 GitHub API URL | `https://api.github.com` |
+| 變量                  | 描述                  | 默認值                     |
+| --------------------- | --------------------- | -------------------------- |
+| `GITHUB_TOKEN`        | GitHub API 令牌       | 無（私有儲存庫需要）       |
+| `GITHUB_API_BASE_URL` | 自定義 GitHub API URL | `https://api.github.com`   |
+| `GITEA_TOKEN`         | Gitea API 令牌        | 無（私有儲存庫需要）       |
+| `GITEA_API_BASE_URL`  | 自定義 Gitea API URL  | `https://gitea.com/api/v1` |
 
 ### 速率限制
 
@@ -295,10 +345,12 @@ for pr_data in result.prs:
 │   └── swebenchv2/
 │       ├── cli.py                # 包含文檔化入口點的 CLI 介面
 │       ├── datamodule/
-│       │   └── github.py         # 包含完整文檔字符串的主要提取邏輯
+│       │   ├── github.py         # GitHub 提取邏輯，包含完整文檔字符串
+│       │   └── gitea.py          # Gitea 提取邏輯，包含完整文檔字符串
 │       └── typings/
 │           ├── models.py         # 包含文檔化保存方法的數據模型
-│           ├── prs.py           # 拉取請求類型和枚舉
+│           ├── prs.py           # GitHub 拉取請求類型和枚舉
+│           ├── gitea_prs.py     # Gitea 拉取請求類型和枚舉
 │           └── limit.py         # 包含狀態檢查的速率限制處理
 ├── tests/                        # 全面測試套件
 ├── data/                         # 提取數據的輸出目錄
@@ -317,7 +369,7 @@ for pr_data in result.prs:
 - `SWEBench.__call__()` - 可調用介面文檔
 - `main()` - 包含 Fire 整合詳情的 CLI 入口點
 
-**GitHub 整合 (`github.py`)**：
+**GitHub 整合 (`github.py`)** 和 **Gitea 整合 (`gitea.py`)**：
 
 - `GitHubPRExtractor.get_rate_limit()` - 包含返回類型信息的速率限制檢查
 - `GitHubPRExtractor.get_merged_prs()` - 包含分頁詳情的 PR 獲取

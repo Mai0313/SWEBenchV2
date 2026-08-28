@@ -29,7 +29,7 @@ This approach assumes that merged pull requests represent consensus among experi
 - **🔍 Real-world Data**: Extracts training data from actual merged pull requests
 - **📊 Pattern Matching**: Focuses on similarity to developer patterns rather than binary correctness
 - **📋 Comprehensive Analysis**: Captures before/after code states, PR context, and metadata
-- **🔗 GitHub Integration**: Seamlessly connects to any GitHub repository
+- **🔗 GitHub & Gitea Integration**: Seamlessly connects to any GitHub or Gitea repository
 - **⚡ High-Performance Async**: Multi-level concurrent processing with `asyncio.gather()` for maximum speed
 - **🚦 Smart Rate Limiting**: Built-in GitHub API rate limit management with semaphore-based concurrency control
 - **⚙️ Flexible Configuration**: Configurable extraction parameters for different use cases
@@ -37,7 +37,7 @@ This approach assumes that merged pull requests represent consensus among experi
 
 ## 📊 How It Works
 
-1. **Data Extraction**: Scans GitHub repositories for merged pull requests
+1. **Data Extraction**: Scans GitHub or Gitea repositories for merged pull requests
 2. **Content Capture**: Records the before and after states of all modified files
 3. **Context Preservation**: Maintains PR titles, descriptions, and metadata
 4. **Dataset Generation**: Creates structured training data suitable for LLM evaluation
@@ -93,8 +93,11 @@ export GITHUB_TOKEN="your_github_token_here"
 After installing the package, you can use the `swebenchv2` command directly:
 
 ```bash
-# Basic usage - extract PRs from a repository
+# Basic usage - extract PRs from a GitHub repository
 swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
+
+# Extract PRs from a Gitea repository
+swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"
 
 # With custom parameters
 swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2" --max_page=5 --per_page=50
@@ -105,6 +108,9 @@ swebenchv2 main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 # Using asynchronous mode (faster for large repositories)
 swebenchv2 a_main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
+# Works with Gitea repositories too
+swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"
+
 # The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
 ```
 
@@ -112,27 +118,37 @@ swebenchv2 a_main --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
 ```python
 from swebenchv2.datamodule.github import GitHubPRExtractor
+from swebenchv2.datamodule.gitea import GiteaPRExtractor
 
-# Initialize the extractor
-extractor = GitHubPRExtractor(
-    repo_url="https://github.com/owner_name/repository_name",
+# Initialize the GitHub extractor
+github_extractor = GitHubPRExtractor(
+    repo_url="https://github.com/Mai0313/SWEBenchV2",
     max_page=10,  # Limit pages to extract
     per_page=50,  # PRs per page
 )
 
-# Extract all PR data - now with comprehensive docstrings
-result = extractor.extract_all_pr_data(save_json=True)
-print(f"Extracted {result.total_prs} PRs from {result.repository}")
+# Initialize the Gitea extractor
+gitea_extractor = GiteaPRExtractor(
+    repo_url="https://gitea.com/gitea/gitea-mcp", max_page=10, per_page=50
+)
+
+# Extract all PR data from GitHub - now with comprehensive docstrings
+github_result = github_extractor.extract_all_pr_data(save_json=True)
+print(f"Extracted {github_result.total_prs} PRs from {github_result.repository}")
+
+# Extract all PR data from Gitea
+gitea_result = gitea_extractor.extract_all_pr_data(save_json=True)
+print(f"Extracted {gitea_result.total_prs} PRs from {gitea_result.repository}")
 
 # All methods now include detailed documentation
-# Check rate limits before extraction
-rate_limit = extractor.get_rate_limit()  # Returns RateLimit with remaining calls info
+# Check rate limits before extraction (GitHub only)
+rate_limit = github_extractor.get_rate_limit()  # Returns RateLimit with remaining calls info
 print(f"Remaining requests: {rate_limit.rate.remaining}")
 
 # Get specific PR files with full documentation
-merged_prs = extractor.get_merged_prs()  # Returns list[PullRequest] with pagination
+merged_prs = github_extractor.get_merged_prs()  # Returns list[PullRequest] with pagination
 for pr in merged_prs[:3]:
-    files = extractor.get_pr_files(pr.number)  # Returns list[FileData] for modified files
+    files = github_extractor.get_pr_files(pr.number)  # Returns list[FileData] for modified files
     print(f"PR #{pr.number} modified {len(files)} files")
 ```
 
@@ -156,28 +172,50 @@ uv run cli --repo_url="https://github.com/Mai0313/SWEBenchV2"
 # Method 5: Using uv run with swebenchv2 entry point
 uv run swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
 
+# Method 6: Using uvx (new addition)
+uvx swebenchv2 --repo_url="https://github.com/Mai0313/SWEBenchV2"
+
+# All methods work with Gitea repositories too
+swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"
+uvx swebenchv2 --repo_url="https://gitea.com/gitea/gitea-mcp"
+
 # The extracted data will be saved to ./data/{owner}/{repo}/log_{timestamp}.json
 ```
 
 ### Advanced Configuration
 
 ```python
-extractor = GitHubPRExtractor(
+# GitHub configuration
+github_extractor = GitHubPRExtractor(
     repo_url="https://github.com/your_org/your_repo",
     max_page=5,  # Limit to first 5 pages
     per_page=100,  # 100 PRs per page
     token="your_token",  # Optional: set token directly
 )
 
-# Check rate limits before extraction
-rate_limit = extractor.get_rate_limit()
+# Gitea configuration
+gitea_extractor = GiteaPRExtractor(
+    repo_url="https://gitea.com/your_org/your_repo",
+    max_page=5,
+    per_page=100,
+    token="your_gitea_token",  # Optional: set Gitea token directly
+)
+
+# Check rate limits before extraction (GitHub only)
+rate_limit = github_extractor.get_rate_limit()
 print(f"Remaining requests: {rate_limit.rate.remaining}")
 
-# Extract data for specific PRs
-merged_prs = extractor.get_merged_prs()
+# Extract data for specific PRs from GitHub
+merged_prs = github_extractor.get_merged_prs()
 for pr in merged_prs[:5]:  # Process first 5 PRs
-    pr_data = extractor.extract_pr_data(pr)
+    pr_data = github_extractor.extract_pr_data(pr)
     print(f"Extracted data for PR #{pr.number}: {pr.title}")
+
+# Extract data from Gitea (no rate limit checking needed)
+gitea_merged_prs = gitea_extractor.get_merged_prs()
+for pr in gitea_merged_prs[:5]:
+    pr_data = gitea_extractor.extract_pr_data(pr)
+    print(f"Extracted Gitea PR #{pr.number}: {pr.title}")
 ```
 
 ### Asynchronous Usage
@@ -187,24 +225,34 @@ For better performance with large repositories, use the asynchronous version wit
 ```python
 import asyncio
 from swebenchv2.datamodule.github import AsyncGitHubPRExtractor
+from swebenchv2.datamodule.gitea import AsyncGiteaPRExtractor
 
 
 async def extract_data():
-    extractor = AsyncGitHubPRExtractor(
+    # GitHub async extraction
+    github_extractor = AsyncGitHubPRExtractor(
         repo_url="https://github.com/your_org/your_repo", max_page=5, per_page=100
+    )
+
+    # Gitea async extraction
+    gitea_extractor = AsyncGiteaPRExtractor(
+        repo_url="https://gitea.com/your_org/your_repo", max_page=5, per_page=100
     )
 
     # Async extraction with multi-level concurrency
     # - File content fetching: concurrent before/after retrieval
     # - PR processing: concurrent file handling with semaphore control
     # - Batch processing: concurrent PR extraction across repository
-    result = await extractor.extract_all_pr_data(save_json=True)
-    print(f"Extracted {result.total_prs} PRs with high-speed async processing")
-    return result
+    github_result = await github_extractor.extract_all_pr_data(save_json=True)
+    gitea_result = await gitea_extractor.extract_all_pr_data(save_json=True)
+
+    print(f"Extracted {github_result.total_prs} GitHub PRs with high-speed async processing")
+    print(f"Extracted {gitea_result.total_prs} Gitea PRs with high-speed async processing")
+    return github_result, gitea_result
 
 
 # Run async extraction
-result = asyncio.run(extract_data())
+github_result, gitea_result = asyncio.run(extract_data())
 ```
 
 ### Performance Benefits
@@ -263,6 +311,8 @@ The extracted data is saved in JSON format with the following structure:
 | --------------------- | --------------------- | --------------------------------- |
 | `GITHUB_TOKEN`        | GitHub API token      | None (required for private repos) |
 | `GITHUB_API_BASE_URL` | Custom GitHub API URL | `https://api.github.com`          |
+| `GITEA_TOKEN`         | Gitea API token       | None (required for private repos) |
+| `GITEA_API_BASE_URL`  | Custom Gitea API URL  | `https://gitea.com/api/v1`        |
 
 ### Rate Limiting
 
@@ -295,10 +345,12 @@ for pr_data in result.prs:
 │   └── swebenchv2/
 │       ├── cli.py                # CLI interface with documented entry points
 │       ├── datamodule/
-│       │   └── github.py         # Main extraction logic with comprehensive docstrings
+│       │   ├── github.py         # GitHub extraction logic with comprehensive docstrings
+│       │   └── gitea.py          # Gitea extraction logic with comprehensive docstrings
 │       └── typings/
 │           ├── models.py         # Data models with documented save methods
-│           ├── prs.py           # Pull request types and enums
+│           ├── prs.py           # GitHub pull request types and enums
+│           ├── gitea_prs.py     # Gitea pull request types and enums
 │           └── limit.py         # Rate limit handling with status checking
 ├── tests/                        # Comprehensive test suite
 ├── data/                         # Output directory for extracted data
@@ -317,7 +369,7 @@ All core functions now include comprehensive Google-style docstrings:
 - `SWEBench.__call__()` - Callable interface documentation
 - `main()` - CLI entry point with Fire integration details
 
-**GitHub Integration (`github.py`)**:
+**GitHub Integration (`github.py`)** and **Gitea Integration (`gitea.py`)**:
 
 - `GitHubPRExtractor.get_rate_limit()` - Rate limit checking with return type info
 - `GitHubPRExtractor.get_merged_prs()` - PR fetching with pagination details
